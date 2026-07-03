@@ -1,0 +1,17 @@
+site_name: "UVSQ_M2_NewSpace_TP_classification"
+site_url: "https://nicoudart.github.io/UVSQ_M2_NewSpace_TP_classification"
+site_author: "Nicolas OUDART"
+
+theme:
+  name: readthedocs
+nav:
+  - Accueil: index.md
+  - TP Sentinel: TP_sentinel.md
+  - TP Exoplanètes: TP_exoplanets.md
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - attr_list
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
