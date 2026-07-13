@@ -1,6 +1,6 @@
 # Les différents types d'exoplanètes
 
-![En-tête TP exoplanètes](img/.png)
+![En-tête TP exoplanètes](img/Header_TP_exoplanets.png)
 
 
 
@@ -117,6 +117,8 @@ Le tableau sera stocké sous la forme d'un **DataFrame** nommé `df_dataset`.
 Vous pouvez tester votre script pour vérifier que le DataFrame contient bien le tableau attendu.
 
 ## Analyse des données
+
+
 
 ![Nuage de points](img/Exoplanets_scatter_points.png)
 
