@@ -125,6 +125,11 @@ En regardant le contenu du tableau chargé, vous avez dû remarquer qu'il contie
 Or, pour notre problème nous n'avons besoin que de 2 variables : la masse et la période orbitale de chaque planète.
 
 Il nous faut donc sélectionner les 2 colonnes correspondantes : `mass` et `orbital_period`.
+Ceci est faisable avec un simple :
+
+~~~
+df_dataset = df_dataset[['mass','orbital_period']]
+~~~
 
 **Ajoutez à votre script Python la sélection de ces 2 colonnes du DataFrame.**
 
@@ -136,7 +141,13 @@ C'est le cas ici.
 
 Nous pouvons donc éliminer du tableau les lignes contenant un NaN pour au moins une des 2 variables.
 
+Pour ce faire, il suffit d'utiliser la méthode `dropna` des DataFrame :
 
+~~~
+df_dataset = df_dataset.dropna()
+~~~
+
+**Ajoutez à votre script Python l'élimination des lignes du DataFrame contenant des NaN.**
 
 ## Analyse des données
 
