@@ -95,6 +95,27 @@ Il peut être importé par la plupart des logiciels tableurs (Excel, OpenOffice 
 
 ### Importation avec Pandas
 
+Pour importer un tableau sous Python à partir d'un fichier CSV, nous allons utiliser la bibliothèque **Pandas**.
+
+Il ne faudra donc pas oublier d'importer `pandas` en début de script :
+
+~~~
+import pandas as pd
+~~~
+
+Pour importer notre fichier, il faudra utiliser la méthode `read_csv`.
+Par exemple, pour un fichier CSV se situant à un chemin `input_path` sur votre ordinateur :
+
+~~~
+df_dataset = pd.read_csv(input_path)
+~~~
+
+Le tableau sera stocké sous la forme d'un **DataFrame** nommé `df_dataset`.
+
+**Ajoutez à votre script Python l'importation de notre fichier CSV**.
+
+Vous pouvez tester votre script pour vérifier que le DataFrame contient bien le tableau attendu.
+
 ## Analyse des données
 
 ![Nuage de points](img/Exoplanets_scatter_points.png)
