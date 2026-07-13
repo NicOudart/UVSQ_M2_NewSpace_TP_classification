@@ -2,7 +2,9 @@
 
 ![En-tête TP exoplanètes](img/Header_TP_exoplanets.png)
 
+_"I don't like planets. There's dust and weather, and something always wants to eat the humans."_
 
+**Martha Wells, Muderbot Diaries, Exit Strategy (2018)**
 
 ## Contexte scientifique
 
@@ -19,9 +21,9 @@ Vous pouvez consulter ce site ici : [site de exoplanet.eu](https://exoplanet.eu)
 
 Un extrait de ce tableau a été récupéré en avril 2026 sur le site d'exoplanet.eu, que vous trouverez [ici](https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/exoplanet_catalogue_2026.csv).
 
-Il contient entre autres pour chaque exoplanète les 2 informations suivantes : sa **masse** (en ratio par rapport à la masse de Jupiter) et sa **période de rotation** autour de son étoile (en jours terrestres).
+Il contient entre autres pour chaque exoplanète les 2 informations suivantes : sa **masse** (en ratio par rapport à la masse de Jupiter) et sa **période orbitale** autour de son étoile (en jours terrestres).
 
-Nous savons qu'il existe différents types de planètes dans le système solaire (telluriques, géantes gazeuses, géantes glacées, etc.), ayant des masses et des périodes de rotation différente.
+Nous savons qu'il existe différents types de planètes dans le système solaire (telluriques, géantes gazeuses, géantes glacées, etc.), ayant des masses et des périodes orbitales différente.
 On peut donc légitimement se poser la question suivante : **Est-il possible de discriminer les différents types d'exoplanètes à partir de ces mêmes informations ?**
 
 ## Objectifs
@@ -116,13 +118,33 @@ Le tableau sera stocké sous la forme d'un **DataFrame** nommé `df_dataset`.
 
 Vous pouvez tester votre script pour vérifier que le DataFrame contient bien le tableau attendu.
 
+### Tri des données
+
+En regardant le contenu du tableau chargé, vous avez dû remarquer qu'il contient 98 colonnes et 6414 lignes, soit **98 variables** et **6414 exoplanètes**.
+
+Or, pour notre problème nous n'avons besoin que de 2 variables : la masse et la période orbitale de chaque planète.
+
+Il nous faut donc sélectionner les 2 colonnes correspondantes : `mass` et `orbital_period`.
+
+**Ajoutez à votre script Python la sélection de ces 2 colonnes du DataFrame.**
+
+Si vous regardez attentivement le DataFrame obtenu, vous devriez vous apercevoir que certaines lignes contiennent des `nan`.
+
+Il s'agit des initiales de "**Not A Number**" : une valeur donnée au résultat d'une opération invalide, selon la norme IEEE 754.
+Les NaN sont souvent utilisés en analyse de données pour représenter une **valeur manquante**.
+C'est le cas ici.
+
+Nous pouvons donc éliminer du tableau les lignes contenant un NaN pour au moins une des 2 variables.
+
+
+
 ## Analyse des données
-
-
 
 ![Nuage de points](img/Exoplanets_scatter_points.png)
 
 ![Histogramme 2D](img/Exoplanets_2D_histogram.png)
+
+## Préparation des données
 
 ## Partitionnement
 
