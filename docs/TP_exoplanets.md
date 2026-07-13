@@ -26,9 +26,11 @@ Il contient entre autres pour chaque exoplanète les 2 informations suivantes : 
 Nous savons qu'il existe différents types de planètes dans le système solaire (telluriques, géantes gazeuses, géantes glacées, etc.), ayant des masses et des périodes orbitales différente.
 On peut donc légitimement se poser la question suivante : **Est-il possible de discriminer les différents types d'exoplanètes à partir de ces mêmes informations ?**
 
+On reconnait dans cette question un problème de **partition** (ou classification non-supervisée).
+
 ## Objectifs
 
-Lors de ce tutoriel, nous allons programmer une **chaîne d'analyse de données** sous la forme d'un **script Python**, que nous utiliserons pour explorer les différents **types d'exoplanètes**.
+Lors de ce tutoriel, nous allons programmer une **chaîne de partitionnement de données** sous la forme d'un **script Python**, que nous utiliserons pour explorer les différents **types d'exoplanètes**.
 
 Ce script Python devra :
 
@@ -149,7 +151,15 @@ df_dataset = df_dataset.dropna()
 
 **Ajoutez à votre script Python l'élimination des lignes du DataFrame contenant des NaN.**
 
+Si vous testez à nouveau votre script Python, le nouveau DataFrame obtenu après tri devrait contenir 2 colonnes et 1989 lignes.
+Nous avons donc **1989 exoplanètes** dont la masse et la période orbitale sont connues.
+
 ## Analyse des données
+
+Le réflexe à avoir lorsque l'on veut réaliser une partition de données, et de réaliser au préalable une analyse visuelle des données afin de vérifier si vouloir réaliser une partition a ici un sens.
+
+Dans notre exemple, nous sommes en 2D, car nous n'avons retenu que 2 variables.
+Visualiser les données est donc ici très simple.
 
 ![Nuage de points](img/Exoplanets_scatter_points.png)
 
