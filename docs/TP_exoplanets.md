@@ -190,6 +190,8 @@ plt.xscale("log")
 plt.yscale("log")
 ~~~
 
+**Ajoutez cet affichage graphique à votre script Python.**
+
 Vous devriez alors obtenir un graphique similaire à celui-ci :
 
 ![Nuage de points](img/Exoplanets_scatter_points.png)
@@ -206,6 +208,8 @@ sns.histplot(data=df_dataset,x="orbital_period",y="mass",bins=30,log_scale=(True
 ~~~
 
 Le paramètres `bin` permet de définir le nombre d'intervalles de l'histogramme selon l'axe horizontal et l'axe vertical.
+
+**Ajoutez ce nouvel affichage graphique à votre script Python.**
 
 Vous devriez alors obtenir un graphique similaire à celui-ci :
 
@@ -227,7 +231,44 @@ Il faudra garder ces critères en tête pendant la suite de ce tutoriel.
 
 ## Préparation des données
 
+Maintenant que nous avons vérifié la pertinence de vouloir séparer différentes classes d'exoplanètes à partir de leur masse et de leur période orbitale, nous pouvons passer à la **préparation des données** pour le paritionnement.
+
+En effet, nous avons vu précédemment qu'en échelle linéaire, il était difficile de distinguer quoi que ce soit dans nos données.
+Une méthode de partitionnement aura donc également du mal à séparer des groupes ayant un sens physique dans ces données si nous n'opérons pas une **transformation**.
+
+Assez logiquement, nous allons opérer ici une **transformation logarithmique**.
+
+Pour définir une transformation à appliquer à des données, on peut se servir de la méthode `FunctionTransformer` de la bibliothèque "Scikit-Learn" (`sklearn`).
+
+Il ne faut donc pas oublier de l'importer en début de script : 
+
+~~~
+from sklearn.preprocessing import FunctionTransformer
+~~~
+
+Il faut ensuite définir la fonction que l'on veut appliquer aux données pour réaliser notre transformation :
+
+~~~
+log_transformer = FunctionTransformer(func=np.log10,inverse_func=lambda x: 10**x)
+~~~
+
+Il est possible de définir la fonction inverse, afin de pouvoir facilement revenir aux données de base.
+
+Il est également à noter que si des paramètres de la fonction dépendent des données (comme le centrage-réduction par exemple), il faudra d'abord ajuster la fonction aux données avec la méthode `fit`.
+
+On peut alors appliquer la transformation que nous venons de définir à nos données :
+
+~~~
+df_dataset[['orbital_period','mass']] = pd.DataFrame(log_transformer.transform(df_dataset))
+~~~
+
+**Ajoutez la transformation logarithmique des données à votre script Python, avant tout partitionnement**.
+
 ## Partitionnement
+
+Nous allons à présent essayer de **partitionner** nos données en différentes classes d'exoplanètes.
+
+Pour ce faire, nous allons appliquer 2 méthodes très classiques : les **K-moyennes** et la **CAH**.
 
 ### K-moyennes
 
