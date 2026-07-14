@@ -24,7 +24,9 @@ Un extrait de ce tableau a été récupéré en avril 2026 sur le site d'exoplan
 Il contient entre autres pour chaque exoplanète les 2 informations suivantes : sa **masse** (en ratio par rapport à la masse de Jupiter) et sa **période orbitale** autour de son étoile (en jours terrestres).
 
 Nous savons qu'il existe différents types de planètes dans le système solaire (telluriques, géantes gazeuses, géantes glacées, etc.), ayant des masses et des périodes orbitales différente.
-On peut donc légitimement se poser la question suivante : **Est-il possible de discriminer les différents types d'exoplanètes à partir de ces mêmes informations ?**
+On peut donc légitimement se poser la question suivante : 
+
+_Est-il possible de discriminer les différents types d'exoplanètes à partir de ces mêmes informations ?_
 
 On reconnait dans cette question un problème de **partition** (ou classification non-supervisée).
 
@@ -188,11 +190,40 @@ plt.xscale("log")
 plt.yscale("log")
 ~~~
 
-Vous devrie alors obtenir un graphique similaire à celui-ci :
+Vous devriez alors obtenir un graphique similaire à celui-ci :
 
 ![Nuage de points](img/Exoplanets_scatter_points.png)
 
+On peut déjà noter que quelques groupes de points se démarquent.
+Mais la grande quantité de points rend difficile à visualiser la densité de planètes dans certaines zones du graphique.
+
+Une solution pour aider à visualiser les "groupes" d'exoplanètes dans le graphique est d'afficher un **histogramme 2D**.
+
+Avec `seaborn`, il suffit d'utiliser la méthode `histplot`, en n'oubliant pas d'indiquer que l'on veut des axes logarithmiques :
+
+~~~
+sns.histplot(data=df_dataset,x="orbital_period",y="mass",bins=30,log_scale=(True,True),cbar=True)
+~~~
+
+Le paramètres `bin` permet de définir le nombre d'intervalles de l'histogramme selon l'axe horizontal et l'axe vertical.
+
+Vous devriez alors obtenir un graphique similaire à celui-ci :
+
 ![Histogramme 2D](img/Exoplanets_2D_histogram.png)
+
+A partir de ces graphiques, posez-vous les questions suivantes :
+
+_Remarquez-vous des groupes d'exoplanètes ressortir ? Si oui, combien ?_
+
+_Pensez-vous que la partitionnement a ici un sens ? Va-t-il être simple ?_
+
+Ces questions font appel aux 2 critères d'une "bonne partition" :
+
+* Les individus d'une même classe doivent être les plus similaires possibles.
+
+* Les classes doivent être les plus différentes possibles.
+
+Il faudra garder ces critères en tête pendant la suite de ce tutoriel.
 
 ## Préparation des données
 
