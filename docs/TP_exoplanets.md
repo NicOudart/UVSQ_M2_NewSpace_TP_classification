@@ -34,7 +34,7 @@ Lors de ce tutoriel, nous allons programmer une **chaîne de partitionnement de 
 
 Ce script Python devra :
 
-* Importer les données du fichier CSV sous la forme d'un "DataFrame" Pandas.
+* Importer les données du fichier CSV sous la forme d'un "DataFrame" `pandas`.
 
 * Appliquer une transformation de mise à l'échelle aux données.
 
@@ -44,8 +44,8 @@ Ce script Python devra :
 
 * Analyser les caractéristiques des différentes classes afin de les labéliser.
 
-Votre script se basera sur la bibliothèque Python "**Scikit-Learn**", qui propose de nombreuses méthodes de Machine-Learning.
-Nous utiliserons également la bibliothèque "Pandas" pour l'importation et la manipulation des données.
+Votre script se basera sur la bibliothèque Python `Scikit-Learn`, qui propose de nombreuses méthodes de Machine-Learning.
+Nous utiliserons également la bibliothèque `pandas` pour la manipulation des données, et la bibliothèque `seaborn` pour les affichages graphiques.
 
 |Nota Bene|
 |:-|
@@ -95,11 +95,11 @@ Name,Mass,Period
 
 Vous pouvez ouvrir dans un éditeur de texte notre fichier CSV extrait de exoplanet.eu, pour essayer d'en comprendre le contenu.
 
-Il peut être importé par la plupart des logiciels tableurs (Excel, OpenOffice Calc), et sous Python avec la bibliothèque **Pandas**.
+Il peut être importé par la plupart des logiciels tableurs (Excel, OpenOffice Calc), et sous Python avec la bibliothèque `pandas`.
 
 ### Importation avec Pandas
 
-Pour importer un tableau sous Python à partir d'un fichier CSV, nous allons utiliser la bibliothèque **Pandas**.
+Pour importer un tableau sous Python à partir d'un fichier CSV, nous allons utiliser la bibliothèque `pandas`.
 
 Il ne faudra donc pas oublier d'importer `pandas` en début de script :
 
@@ -158,8 +158,37 @@ Nous avons donc **1989 exoplanètes** dont la masse et la période orbitale sont
 
 Le réflexe à avoir lorsque l'on veut réaliser une partition de données, et de réaliser au préalable une analyse visuelle des données afin de vérifier si vouloir réaliser une partition a ici un sens.
 
+Pour les affichages graphiques, nous allons utiliser la bibliothèque `seaborn`.
+Il ne faut donc pas oublier de l'ajouter au début de votre script :
+
+~~~
+import seaborn as sns
+~~~
+
 Dans notre exemple, nous sommes en 2D, car nous n'avons retenu que 2 variables.
 Visualiser les données est donc ici très simple.
+
+Pour commencer, vous pouvez afficher un **nuage de points** des exoplanètes en fonction de leur masse et période orbitale.
+
+Il suffit d'utiliser la méthode `scatterplot` de `seaborn` : 
+
+~~~
+sns.scatterplot(data=df_dataset,x='orbital_period',y='mass')
+~~~
+
+Si vous affichez votre nuage de points avec des axes linéaires, vous obtenez probablement un résultat illisible.
+
+C'est normal, comme beaucoup de grandeurs en physique, la masse et la période orbitale des exoplanètes varient sur plusieurs ordres de grandeurs.
+
+Il vaut donc mieux afficher le graphique avec des axes **logarithmiques**.
+Ceci est possible en ajoutant à votre programme :
+
+~~~
+plt.xscale("log")
+plt.yscale("log")
+~~~
+
+Vous devrie alors obtenir un graphique similaire à celui-ci :
 
 ![Nuage de points](img/Exoplanets_scatter_points.png)
 
