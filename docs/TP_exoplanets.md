@@ -264,19 +264,125 @@ df_dataset[['orbital_period','mass']] = pd.DataFrame(log_transformer.transform(d
 
 **Ajoutez la transformation logarithmique des données à votre script Python, avant tout partitionnement**.
 
-## Partitionnement
+## Partitionnement par partition.
 
 Nous allons à présent essayer de **partitionner** nos données en différentes classes d'exoplanètes.
 
-Pour ce faire, nous allons appliquer 2 méthodes très classiques : les **K-moyennes** et la **CAH**.
+Pour ce faire, nous allons commencer par appliquer la très classique méthode des **K-moyennes**.
 
-### K-moyennes
+### Les K-moyennes
+
+Les K-moyennes sont une méthode de partionnement "**par partition**", c'est-à-dire que l'on sépare les données en classes, sans établir de liens entre les classes obtenues.
+
+Il s'agit d'un algorithme itératif, cherchant à réduire à chaque itération ce que l'on appelle "**l'inertie intra-classe**", à partir d'une partition initiale aléatoire. 
+L'idée est d'essayer de faire converger le modèle vers la partition minimisant cette inertie intra-classe.
+Le **nombre de classes** est un paramètre d'entrée de l'algorithme.
+
+Il existe une implémentation `sklearn` des K-moyennes, que nous allons utiliser lors de ce tutoriel.
+
+N'oubliez donc pas de l'importer en début de script :
+
+~~~
+from sklearn.cluster import KMeans
+~~~
+
+Pour initialiser un modèle `km` des K-moyennes avec `sklearn`, pour un nombre de classes `k`, il suffit d'écrire :
+
+~~~
+km = KMeans(n_clusters=k,random_state=0)
+~~~
+
+L'initialisation des K-moyennes étant aléatoire, le paramètre `random_state` permet de figer la graine aléatoire, afin de toujours obtenir le même résultat en sortie.
+
+Pour obtenir la partition des données sous la forme d'une variable `clusters`, il suffit d'utiliser la méthode `fit_predict` :
+
+~~~
+clusters = km.fit_predict(df_dataset)
+~~~
+
+La variable de sortie contiendra les classes attribuées à chaque individu, sous la forme de numéros.
+
+Enfin, l'inertie intra-classe de la partition obtenue est stockée dans l'attribut `inertia_`.
+Pour la récupérer sous la forme d'une variable `inertia`, il suffit d'écrire :
+
+~~~
+inertia = km.inertia_
+~~~
+
+Vous trouverez dans la section suivante un rappel sur ce qu'est l'inertie intra-classe et ce qu'elle représente.
+
+### Rappels sur l'inertie intra-classe
+
+L'**inertie d'une classe** $i$ contenant $n_i$ individus est définie comme la somme des distances $d$ au barycentre $g_i$ de la classe :
+
+$I_i = \sum_{j=1}^{n_i} d(x_{i,j},g_i)^2$
+
+où chaque $x_{i,j}$ est un vecteur contenant les réalisations des différentes features pour un individu de la classe $i$.
+
+On définit le **barycentre** comme :
+
+$g_i = \frac{1}{n_i} \sum_{j=1}^{n_i} x_{i,j}$
+
+Et la mesure de distance choisie est en général la distance euclidienne.
+
+On définit alors l'**inertie intra-classe** comme étant la somme des inerties des $k$ classes :
+
+$I = \sum_{i=1}^{k} I_i = \sum_{i=1}^{k} \sum_{j=1}^{n_i} d(x_{i,j},g_i)^2$
+
+Il s'agit d'un indicateur de la **similarité des individus au sein de chaque classe**.
+
+Par opposition, l'**inertie inter-classe** est quant à elle définie comme :
+
+$J = \sum_{i=1}^{k} n_i d(g_i,g)^2$
+
+avec $g = \frac{1}{\sum_{i=1}^{k} n_i} \sum_{i=1}^{k} \sum_{j=1}^{n_i} x_{i,j}$ le barycentre du jeu de données complet.
+
+Il s'agit d'un indicateur de la **dissimilarité des différentes classes**.
+
+Nous avons dit plus tôt que lors d'une partition de données, on cherche à minimiser la similarité intra-classe, et maximiser la dissimilarité inter-classe, ce qui revient à dire **minimiser $I$** et **maximiser $J$**.
+
+Or, la somme $T = I+J$, aussi appelée "**inertie totale**" est **constante** pour un **même jeu de donnée** et un **même nombre de classes**, quelque soit la partition choisie.
+
+D'où le fait que les K-moyennes cherchent juste à **minimiser l'inertie intra-classe** .
+
+### La méthode du coude
+
+Comme nous l'avons indiqué précédemment, le **nombre de classes** de la partition à réaliser est **une entrée** de l'algorithme des K-moyennes.
+
+_Mais comment le choisir objectivement sans a priori sur la structure des données ?_
+
+Si l'inertie intra-classe est constante pour un nombre de classes fixe, l'inertie intra-classe de la partition optimale pour un nombre de classes donné va **diminuer si on augmente le nombre de classes**.
+
+Ceci est lié au fait que le nombre d'individus par classe diminue à mesure que l'on augmente le nombre de classes.
+
+Mais attention ! Choisir le nombre classes donnant l'inertie intra-classe la plus faible ne donnera pas un résultat satisfaisant : une partition ayant autant de classes que d'individu aura une inertie intra-classe de 0, mais ne servira pas à grand chose...
+
+C'est pourquoi on va plutôt chercher le nombre de classes à partir duquel l'inertie intra-classe ne diminue plus significativement.
+C'est ce que l'on appelle la **méthode du coude**.
+
+Le principe est le suivant : on applique les K-moyennes à nos données pour un nombre de classes croissant, puis on affiche l'inertie intra-classe obtenue pour chaque nombre de classes.
+On retiendra le nombre de classes pour lequel la courbe forme un "**coude**".
+D'où le nom de la méthode.
+
+**Ajoutez l'affichage de l'inertie intra-classe en fonction du nombre de classes à votre script Python**.
+
+Vous devriez obtenir un graphique similaire à celui-ci :
 
 ![Méthode du coude](img/Exoplanets_inertia.png)
 
+_A partir de ce graphique, quel nombre de classes choisiriez-vous ?_
+
+### Résultat
+
+Admettons que vous ayez choisi un nombre de classes égal à 3.
+
 ![Résultat des K-moyennes](img/Exoplanets_k_means.png)
 
+### Coefficient de silhouette
+
 ![Coefficient de silhouette](img/Exoplanets_silhouette.png)
+
+## Partitionnement hiérarchique
 
 ### CAH
 
