@@ -392,9 +392,99 @@ Il nous faut un critère de performance.
 
 ### Coefficient de silhouette
 
+Un critère classique pour juger un partitionnement est le **coefficient de silhouette**.
+
+Pour chaque individu de la base de données, il est définit comme :
+
+$s(x_{i,j}) = \frac{D_2(x_{i,j})-D_1(x_{i,j})}{max(D_1(x_{i,j}),D_2(x_{i,j}))}$
+
+Avec $D_1$ la **distance moyenne intra-classe** :
+
+$D_1(x_{i,j}) = \frac{1}{n_i-1} \sum_{m=1,m \neq j}^{n_i} d(x_{i,m},x_{i,j})$
+
+Il s'agit d'un indicateur de la **similarité** d'un individu au reste de sa classe : plus il est faible, plus l'individu est proche du reste de sa classe.
+
+Et $D_2$ la **distance moyenne à la classe la plus proche** :
+
+$D_2(x_{i,j}) = min_{1 \leq l \leq k, l \neq i}(\frac{1}{n_l} \sum_{m=1}^{n_l} d(x_{l,m},x_{i,j}))$
+
+Il s'agit d'un indicateur de **dissimilarité** d'un individus par rapport à la classe la plus proche de la sienne : plus il est élevé, plus l'individu est séparable des autres classes
+
+Le coefficient de silhouette est un score compris entre -1 et 1.
+Si pour un individu :
+
+* $s(x_{i,j}) \approx 1$ alors l'individu est correctement identifié à sa classe.
+
+* $s(x_{i,j}) = 0$ alors l'individu est à la frontière entre 2 classes.
+
+* $s(x_{i,j}) < 0$ alors l'individu est mal identifié à sa classe.
+
+On affiche souvent les coefficients de silhouette des différents individus sous la forme d'un histogramme, avec des couleurs différentes pour les classes.
+
+On peut aussi utiliser le coefficient de silhouette moyen $S = \frac{1}{\sum_{i=1}^{k} n_i} \sum_{i=1}^{k} \sum_{j=1}^{n_i} s(x_{i,j})$ comme mesure de la qualité générale d'une partition de données.
+
+Il existe une implémentation du coefficient de silhouette dans `sklearn`, qu'il ne faut pas oublier d'importer en début de script Python :
+
+~~~
+from sklearn.metrics import silhouette_score,silhouette_samples
+~~~
+
+En revanche, il n'existe pas de méthode toute faite pour afficher un histogramme des valeurs du coefficient de silhouette.
+Vous pouvez donc utiliser le morceau de programme suivant :
+
+~~~
+sample_scores = silhouette_samples(df_dataset,clusters)
+
+score = silhouette_score(df_dataset,clusters)
+
+fig, ax = plt.subplots()
+
+y_lower = 10
+for idx in range(3):
+    sample_scores_idx = sample_scores[clusters == idx]
+    sample_scores_idx.sort()
+
+    size_cluster_idx = sample_scores_idx.shape[0]
+    y_upper = y_lower + size_cluster_idx
+
+    color = plt.cm.tab10(idx)
+    ax.fill_betweenx(
+        np.arange(y_lower, y_upper),
+        0,
+        sample_scores_idx,
+        facecolor=color,
+        edgecolor=color,
+        alpha=0.7
+    )
+
+    ax.text(-0.05, y_lower + 0.5 * size_cluster_idx, str(idx))
+    y_lower = y_upper + 10
+    
+ax.axvline(x=score,color="red",linestyle="--")
+
+ax.set_yticks([])
+ax.set_xlim([-1, 1])
+ax.set_xlabel("Coefficient de silhouette",fontsize=12)
+ax.set_ylabel("Classes",fontsize=12)
+~~~
+
+**Ajoutez à votre script Python l'affichage d'un histogramme de coefficients de silhouettes pour votre partition des exoplanètes**.
+
+Vous devriez obtenir un graphique similaire à celui-ci :
+
 ![Coefficient de silhouette](img/Exoplanets_silhouette.png)
 
+_Les exoplanètes sont-elles bien attribuées à leur classe pour les 3 classes ?_
+
+_De manière générale, comment jugez-vous cette partition ?_
+
 ## Partitionnement hiérarchique
+
+Si la méthode de partitionnement "par partition" que nous venons de voir est peu gourmande en temps de calcul, pour un résultat plutôt satisfaisant, elle ne permet pas en revanche de **tracer des liens** entre les classes : on ne sait pas quelles classes sont les plus proches ou les plus éloignées.
+
+Les méthodes de partitionnement "**hiérarchique**" en revanche, permettent d'établir les liens entre les classes, au prix d'un temps de calcul plus élevé.
+
+Nous allons appliquer à nos données la plus classique des méthodes hiérarchiques : la **Classification Ascendante Hiérachique** (ou CAH).
 
 ### CAH
 
