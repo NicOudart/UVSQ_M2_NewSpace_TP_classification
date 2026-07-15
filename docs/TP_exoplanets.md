@@ -272,9 +272,9 @@ Pour ce faire, nous allons commencer par appliquer la très classique méthode d
 
 ### Les K-moyennes
 
-Les K-moyennes sont une méthode de partionnement "**par partition**", c'est-à-dire que l'on sépare les données en classes, sans établir de liens entre les classes obtenues.
+Les **K-moyennes** sont une méthode de partionnement "**par partition**", c'est-à-dire que l'on sépare les données en classes, sans établir de liens entre les classes obtenues.
 
-Il s'agit d'un algorithme itératif, cherchant à réduire à chaque itération ce que l'on appelle "**l'inertie intra-classe**", à partir d'une partition initiale aléatoire. 
+Il s'agit d'un algorithme **itératif**, cherchant à réduire à chaque itération ce que l'on appelle "**l'inertie intra-classe**", à partir d'une partition initiale aléatoire. 
 L'idée est d'essayer de faire converger le modèle vers la partition minimisant cette inertie intra-classe.
 Le **nombre de classes** est un paramètre d'entrée de l'algorithme.
 
@@ -488,7 +488,40 @@ Nous allons appliquer à nos données la plus classique des méthodes hiérarchi
 
 ### CAH
 
+La **CAH** est une méthode **itérative**, **fusionnant** les 2 classes **les plus similaires** à chaque itération.
+
+Elle s'initialise en considérant chaque individu comme unique représentant de sa propre classe : on a autant de classes que d'individu, **l'inertie intra-classe est nulle**.
+
+Elle se termine une fois que toutes les classes ont été fusionnées : on a une unique classe, **l'inertie inter-classe est nulle**.
+
+Toutes les fusions sont **gardées en mémoire**, de manière à pouvoir choisir la partition ayant le **nombre de classes optimal** a posteriori.
+
+Cette méthode implique donc de choisir un **critère de similarité** entre 2 classes.
+Voici les 4 principaux critères utilisables par la CAH pour mesurer la similarité entre 2 classes :
+
+* **Lien simple** : la distance minimale entre 2 individus issus de ces 2 classes.
+
+* **Lien complet** : la distance maximale entre 2 individus issus de ces 2 classes.
+
+* **Lien moyen** : la moyenne des distances entre tous les couples d'individus issus des 2 classes possibles.
+
+* **Critère de Ward** : l'augmentation de l'inertie intra-classe quand les 2 classes sont fusionnées.
+
+Le choix de critère dépend de la définition de "similarité" la plus appropriée pour un problème donné.
+
+Lors de ce tutoriel, nous utiliserons le **critère de Ward**, qui est souvent le choix par défaut.
+
+### Dendrogramme
+
+Comme nous l'avons expliqué plus tôt, les fusions sont gardées en mémoire par la CAH, afin que nous puissions choisir une partition pour un nombre de classe donné a posteriori.
+
+Pour réaliser ce choix, on affiche en général un type de représentation graphique des différentes fusion appelé "**dendrogramme**".
+
+
+
 ![Dendrogramme](img/Exoplanets_dendrogramme.png)
+
+### Résultat
 
 ![Résultat de la CAH](img/Exoplanets_CAH.png)
 
