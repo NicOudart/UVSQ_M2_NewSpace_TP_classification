@@ -376,7 +376,19 @@ _A partir de ce graphique, quel nombre de classes choisiriez-vous ?_
 
 Admettons que vous ayez choisi un nombre de classes égal à 3.
 
+**Ajoutez à votre script Python le partitionnement de nos données en 3 classes, avec les K-moyennes**.
+
+Affichez ensuite le résultat sous la forme d'un nuage de points, avec des couleurs différentes pour les 3 classes.
+
+Vous devriez obtenir un graphique similaire à celui-ci :
+
 ![Résultat des K-moyennes](img/Exoplanets_k_means.png)
+
+Cette partition est probablement très similaire aux groupes de planètes que vous auriez instinctivement tracés à la main.
+
+_Mais comment juger objectivement le résultat d'un partitionnement ?_
+
+Il nous faut un critère de performance.
 
 ### Coefficient de silhouette
 
