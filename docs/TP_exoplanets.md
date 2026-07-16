@@ -688,7 +688,7 @@ _Les planètes du système solaire ont-elles l'air de faire partie d'une de nos 
 
 Clairement, hormis pour Jupiter (et peut-être Saturne), il est difficile de ranger les planètes du système solaire dans une des 3 classes que nous avons déterminées.
 
-_Mais d'où vient le problème ?_
+_Mais d'où vient le problème ? Le système solaire est-il si unique ?_
 
 Vous l'aurez probablement deviné : **la méthode de détection !**
 
@@ -712,4 +712,22 @@ Vous devriez obtenir un graphique similaire à celui-ci :
 
 ![Méthode de détection des exoplanètes](img/Exoplanets_detection_types.png)
 
-## Conclusion
+2 de nos 3 classes contiennent quasi-exclusivement des exoplanètes détectées par la **méthode du transit**.
+
+Cette méthode consiste à mesurer la baisse de luminosité observée au passage de la planète dans l'axe entre son étoile et la Terre.
+Elle a non seulement tendance à favoriser la découverte d'exoplanètes de taille plutôt importante, mais surtout de période orbitale courte.
+D'où le fait qu'elle soit liée à ces 2 classes.
+
+1 de nos 3 classes est plutôt associée à la **méthode des vitesses radiales** et à l'**imagerie directe**.
+
+On peut donc légitimement si certaines classes ne traduisent pas plutôt une différence de méthode d'observation plutôt que des types d'exoplanètes bien distincts.
+Mais la méthode d'observation pouvant favoriser certains types d'exoplanètes, c'est peut-être les 2.
+Difficile à dire...
+
+La leçon à en tirer : **il faut toujours réfléchir à la pertinence des classes que l'on obtient au moment de labéliser une partition de données !**
+
+---
+
+**C'était le dernier TP de ce cours !**
+
+N'hésitez pas à reprendre les différents tutoriels chez vous.
