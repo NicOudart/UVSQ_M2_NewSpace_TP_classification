@@ -376,6 +376,20 @@ _A partir de ce graphique, quel nombre de classes choisiriez-vous ?_
 
 Admettons que vous ayez choisi un nombre de classes égal à 3.
 
+On peut initialiser un nouveau modèle `km` pour 3 classes, récupérer la partition sous la forme d'une variable `clusters`, et l'ajouter comme une nouvelle colonne `clusters` au DataFrame `df_dataset` avec le programme :
+
+~~~
+km = KMeans(n_clusters=3,random_state=0)
+
+clusters = km.fit_predict(df_dataset)
+
+df_dataset['clusters'] = clusters
+
+df_dataset[['orbital_period','mass']] = pd.DataFrame(log_transformer.inverse_transform(df_dataset[['orbital_period','mass']]))
+~~~
+
+On notera que l'on a utilisé la fonction inverse de `log_transformer` afin de remettre les variables en échelle linéaire pour l'affichage.
+
 **Ajoutez à votre script Python le partitionnement de nos données en 3 classes, avec les K-moyennes**.
 
 Affichez ensuite le résultat sous la forme d'un nuage de points, avec des couleurs différentes pour les 3 classes.
@@ -516,15 +530,186 @@ Lors de ce tutoriel, nous utiliserons le **critère de Ward**, qui est souvent l
 Comme nous l'avons expliqué plus tôt, les fusions sont gardées en mémoire par la CAH, afin que nous puissions choisir une partition pour un nombre de classe donné a posteriori.
 
 Pour réaliser ce choix, on affiche en général un type de représentation graphique des différentes fusion appelé "**dendrogramme**".
+Il s'agit d'un arbre représentant les liens entre classes (en abscisse) et leurs distances (en ordonnée).
 
+Pour générer un dendrogramme, on peut utiliser la méthode `dendrogram` de `scipy`.
+Il faut donc penser à l'importer en début de script Python :
 
+~~~
+from scipy.cluster.hierarchy import dendrogram
+~~~
+
+En revanche, il n'existe pas de méthode toute faite pour afficher le dendrogramme sous la forme d'un graphique.
+Voici donc une fonction Python pour le faire, qui fait elle-même appel à la méthode `dendrogram` de `scipy` :
+
+~~~
+def plot_dendrogram(model, **kwargs):
+    
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+
+    for i, merge in enumerate(model.children_):
+        current_count = 0
+        for child_idx in merge:
+            if child_idx < n_samples:
+                current_count += 1
+            else:
+                current_count += counts[child_idx - n_samples]
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack([
+        model.children_,
+        model.distances_,
+        counts
+    ]).astype(float)
+
+    dendrogram(linkage_matrix, **kwargs)
+~~~
+
+On peut ensuite initialiser un modèle `hca` de **CAH** avec le **lien de Ward**, et générer un partitionnement avec la méthode `fit` :
+
+~~~
+hca = AgglomerativeClustering(distance_threshold=0,n_clusters=None,linkage='ward')
+hca.fit(df_dataset)
+~~~
+
+Les paramètres pour initialiser `hca` on été choisis pour réaliser toutes les itérations de la CAH, jusqu'à ce que tous les individus soient dans une même classe.
+Nous verrons qu'il est également possible de faire s'arrêter l'algorithme lorsque le nombre de classes désiré est atteint.
+
+Enfin, on peut réaliser l'affichage du dendrogramme avec notre fonction `plot_dendrogram` et `matplotlib` :
+
+~~~
+plt.figure()
+plot_dendrogram(hca,truncate_mode="level")
+plt.xlabel("Classes",fontsize=12)
+plt.ylabel("Distance entre classes",fontsize=12)
+plt.xticks([])
+plt.show()
+~~~
+
+N'oubliez pas d'importer `matplotlib` en début de script Python avec :
+
+~~~
+import matplotlib.pyplot as plt
+~~~
+
+**Ajoutez à votre script Python l'affichage d'un dendrogramme de la partition de nos données réalisée par la CAH**.
+
+Vous devriez obtenir un graphique similaire à celui-ci :
 
 ![Dendrogramme](img/Exoplanets_dendrogramme.png)
 
+_Ce dendrogramme confirme-t-il le choix de 3 classes que nous avons fait pour le partitionnement "par partition" ?_
+
 ### Résultat
+
+Nous allons à présent utiliser la CAH pour obtenir une partition des exoplanètes en 3 classes.
+
+Comme pour le partitionnement "par partition", nous pouvons initialiser un nouveau modèle `hca` pour 3 classes, récupérer la partition sous la forme d'une variable `clusters`, et l'ajouter comme une nouvelle colonne `clusters` au DataFrame `df_dataset` avec le programme :
+
+~~~
+hca = AgglomerativeClustering(n_clusters=3,linkage='ward')
+
+clusters = hca.fit_predict(df_dataset)
+
+df_dataset['clusters'] = clusters
+
+df_dataset[['orbital_period','mass']] = pd.DataFrame(log_transformer.inverse_transform(df_dataset[['orbital_period','mass']]))
+~~~
+
+**Ajoutez à votre script Python le partitionnement de nos données en 3 classes, avec la CAH**.
+
+Affichez ensuite le résultat sous la forme d'un nuage de points, avec des couleurs différentes pour les 3 classes.
+
+Vous devriez obtenir un graphique similaire à celui-ci :
 
 ![Résultat de la CAH](img/Exoplanets_CAH.png)
 
-## Interprétation
+_Le résultat est-il différent de celui obtenu avec le partitionnement "par partition" ?_
+
+Vous pouvez essayer de changer le type de lien utilisé (simple, complet ou moyen), pour voir l'effet sur la partition obtenue.
+
+## Labélisation
+
+### Caractérisation des classes
+
+L'étape ultime de tout partitionnement est la **labélisation** : identifier à quoi correspondent les différentes classes obtenues, et vérifier si elles ont un sens physique.
+
+Pour ce faire, on va chercher à **caractériser** chaque classe par des **indicateurs statistiques** (moyenne, médiane, écart-type, quantiles, etc.).
+
+Il existe des méthodes `mean`, `median`, `quantile` des DataFrames pour calculer ces indicateurs.
+
+**Ajoutez à votre script Python le calcul de la médiane et des pourcentiles 1% et 99% de chaque variable (masse et période orbitale) pour les 3 classes déterminées par les K-moyennes ou la CAH**.
+
+_Quelles sont les caractéristiques des 3 types d'exoplanètes déterminés par notre partitionnement ? Quel label donneriez-vous alors chacune de ces classes ?_
+
+### Contexte planétologique
+
+Pour vous aider à attribuer des labels plus précis à chacune des classes, voici un peu de **contexte planétologique**.
+
+Tout d'abord, voici quelques grands types d'exoplanètes identifiées par les astronomes, et leurs caractéristiques :
+
+* On appelle « **Jupiter chaud** » une exoplanète gazeuse ayant une masse du même ordre de grandeur que Jupiter, mais avec une période orbitale de l’ordre de quelques jours. 
+Le terme « chaud » vient du fait qu’une rotation aussi rapide implique une orbite proche de son étoile (3ème loi de Kepler).
+
+* On appelle « **Jupiter froid** » une exoplanète gazeuse ayant une masse du même ordre de grandeur que Jupiter, mais avec une période orbitale de plusieurs milliers de jours. 
+Par opposition aux « Jupiters chauds », le terme « froid » vient du fait qu’une rotation plus lente implique une orbite plus loin de son étoile.
+ 
+* On appelle « **Neptunienne** » ou « **Mini-Neptune** » une exoplanète gazeuse ayant une masse similaire ou inférieure à 0.05 masses de Jupiter (environ la masse de Neptune).
+
+* On appelle « **Super-Terre** » une exoplanète tellurique ayant une masse supérieure à celle de la Terre, mais inférieure à 0.03 masses de Jupiter (10 masses terrestres environ).
+
+_A partir de ces informations, quel label donneriez-vous à chacune de vos 3 classes ?_
+
+### Discussion
+
+Une des grandes difficulté de la labélisation est de s'assurer que les labels donnés ont un **sens physique intéressant**.
+
+Voici les masses (en masses de Jupiter) et périodes orbitales (en jours) des planètes du système solaire :
+
+|Planète|Masse  |Période orbitale|
+|:-----:|:-----:|:--------------:|
+|Mercure|0.00017|88.0            |
+|Vénus  |0.00257|224.7           |
+|Terre  |0.00315|365.3           |
+|Mars   |0.00034|687.0           |
+|Jupiter|1.00000|4332.6          |
+|Saturne|0.29946|10759.2         |
+|Uranus |0.04573|30688.5         |
+|Neptune|0.05395|60182.0         |
+
+**Tracez ces 8 planètes par-dessus les nuages de points que vous avez obtenus après partitionnement**.
+
+Vous devriez obtenir un graphique similaire à celui-ci pour le résultat de la CAH :
+
+![Résultat de la CAH avec les planètes du système solaire](img/Exoplanets_CAH_solar_system.png)
+
+_Les planètes du système solaire ont-elles l'air de faire partie d'une de nos 3 classes ?_
+
+Clairement, hormis pour Jupiter (et peut-être Saturne), il est difficile de ranger les planètes du système solaire dans une des 3 classes que nous avons déterminées.
+
+_Mais d'où vient le problème ?_
+
+Vous l'aurez probablement deviné : **la méthode de détection !**
+
+En effet, les méthodes actuelles ne permettent pas encore de détecter des planètes aussi petites ou avec des périodes orbitales aussi faibles que celles du système solaire.
+Il y a donc probablement beaucoup de types d'exoplanètes que nous ne pouvons tout simplement pas observer.
+
+De plus, parmi les exoplanètes détectables, **notre observation est probablement biaisée !** 
+
+Par exemple, une plus grande quantité d'exoplanètes d'un certain type dans nos données ne veut pas nécessairement dire qu'il s'agit d'un type plus commun.
+Il peut juste s'agir d'un type plus facilement détectable.
+
+De la même manière, les classes que notre partition séparent pourraient être simplement liées aux différentes méthodes d'observation.
+
+_Comment vérifier que nous ne sommes pas biaisés par les méthodes d'observation ?_
+
+Si vous reprenez le fichier CSV, vous verrez qu'il existe une colonne `detection_type`, correspondant au nom de la méthode de détection employée pour découvrir chaque exoplanète.
+
+**Affichez un nuage de point du même type que ceux tracés précédemment, mais en mettant une couleur différente pour chaque méthode de détection**.
+
+Vous devriez obtenir un graphique similaire à celui-ci :
+
+![Méthode de détection des exoplanètes](img/Exoplanets_detection_types.png)
 
 ## Conclusion
