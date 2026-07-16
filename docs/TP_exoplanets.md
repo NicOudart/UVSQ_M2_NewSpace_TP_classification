@@ -1,10 +1,12 @@
-# Les différents types d'exoplanètes
+# Identifier les différents types d'exoplanètes
 
 ![En-tête TP exoplanètes](img/Header_TP_exoplanets.png)
 
 _"I don't like planets. There's dust and weather, and something always wants to eat the humans."_
 
 **Martha Wells, Muderbot Diaries, Exit Strategy (2018)**
+
+---
 
 ## Contexte scientifique
 
