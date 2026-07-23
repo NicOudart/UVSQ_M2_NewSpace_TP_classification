@@ -30,7 +30,49 @@ Puerto Maldonado est donc un exemple parfait pour étudier **la déforestation e
 
 ### Sentinel 2 et chlorophylle
 
+**Sentinel 2** est une série de satellites d'observation de la Terre faisant partie du programme Copernicus de l'ESA.
 
+Ces satellites ont pour mission de capturer des images optiques de la surface de la Terre, **dans différentes bandes de longueur d'onde**, avec une résolution allant jusqu'à 10 m au sol.
+
+Voici les différentes bandes dans lesquelles les satellites Sentinel 2 sont capables d'acquérir des images :
+
+|Bande|Cible                   |Longueur d'onde|Résolution au sol|
+|:---:|:----------------------:|:-------------:|:---------------:|
+|B01  |Aérosols                |443 nm         |60 m             |
+|B02  |Bleu                    |490 nm         |10 m             |
+|B03  |Vert                    |560 nm         |10 m             |
+|B04  |Rouge                   |665 nm         |10 m             |
+|B05  |Red-edge                |705 nm         |20 m             |
+|B06  |Red-edge                |740 nm         |20 m             |
+|B07  |Red-edge                |783 nm         |20 m             |
+|B08  |Proche infrarouge       |842 nm         |10 m             |
+|B08A |Proche infrarouge étroit|865 nm         |20 m             | 
+|B09  |Vapeur d'eau            |945 nm         |60 m             |
+
+Deux de ces bandes sont particulièrement utiles pour étuder la **végétation** : B04 et B08.
+
+En effet, la chlorophylle contenue dans le feuillage des plantes **absorbe fortement le rouge**, et **réfléchit fortement le proche-infrarouge**.
+
+Cette propriété est essentielle pour les plantes :
+D'une part la photosynthèse nécessite de la lumière dans le rouge.
+Et d'autre part le proche-infrarouge chaufferait inutilement les feuilles, les obligeant à transpirer abondement.
+
+Il est donc très courant en télédétection d'utiliser les bandes rouge et proche-infrarouge pour cartographier la végétation d'une région.
+Il existe même un score calculé à partir de ces 2 bandes pour indiquer la présence de végétation : le **NDVI**.
+
+### Cartographie
+
+Nous allons essayer de cartographier la région de Puerto Maldonado à partir d'une image satellite de Sentinel 2, acquise dans 4 bandes : B02 (bleu), B03 (vert), B04 (rouge) et B08 (proche-infrarouge).
+
+L'idée sera pour chaque pixel de l'image d'identifier à quel type de surface il correspond, à partir de sa couleur (c'est-à-dire la réflectivité perçue dans les différentes bandes).
+
+Nous nous concentrerons sur les 4 types de surface suivants : "eau", "ville", "champs" et "forêt".
+
+
+
+_?_
+
+On reconnait dans cette question un problème de **classification supervisée**.
 
 ## Objectifs
 
