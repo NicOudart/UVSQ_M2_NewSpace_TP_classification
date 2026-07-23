@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Nicolas OUDART" /><link rel="canonical" href="https://nicoudart.github.io/UVSQ_M2_NewSpace_TP_classification/TP_exoplanets/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>TP Exoplanètes - UVSQ_M2_NewSpace_TP_classification</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "TP Exoplan\u00e8tes";
+        var mkdocs_page_input_path = "TP_exoplanets.md";
+        var mkdocs_page_url = "/UVSQ_M2_NewSpace_TP_classification/TP_exoplanets/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> UVSQ_M2_NewSpace_TP_classification
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Accueil</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../TP_sentinel/">TP Sentinel</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">TP Exoplanètes</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#contexte-scientifique">Contexte scientifique</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#objectifs">Objectifs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#importation-des-donnees">Importation des données</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#le-format-csv">Le format CSV</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#importation-avec-pandas">Importation avec Pandas</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#tri-des-donnees">Tri des données</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#analyse-des-donnees">Analyse des données</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparation-des-donnees">Préparation des données</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#partitionnement-par-partition">Partitionnement par partition.</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#les-k-moyennes">Les K-moyennes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rappels-sur-linertie-intra-classe">Rappels sur l'inertie intra-classe</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#la-methode-du-coude">La méthode du coude</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#resultat">Résultat</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#coefficient-de-silhouette">Coefficient de silhouette</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#partitionnement-hierarchique">Partitionnement hiérarchique</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cah">CAH</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dendrogramme">Dendrogramme</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#resultat_1">Résultat</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#labelisation">Labélisation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#caracterisation-des-classes">Caractérisation des classes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#contexte-planetologique">Contexte planétologique</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#discussion">Discussion</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">UVSQ_M2_NewSpace_TP_classification</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">TP Exoplanètes</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="identifier-les-differents-types-dexoplanetes">Identifier les différents types d'exoplanètes</h1>
+<p><img alt="En-tête TP exoplanètes" src="../img/Header_TP_exoplanets.png" /></p>
+<p><em>"I don't like planets. There's dust and weather, and something always wants to eat the humans."</em></p>
+<p><strong>Martha Wells, Muderbot Diaries, Exit Strategy (2018)</strong></p>
+<hr />
+<h2 id="contexte-scientifique">Contexte scientifique</h2>
+<p>En 1995, les astronomes suisses Michel Mayor et Didier Queloz annoncent la découverte d'une planète orbitant autour de l'étoile 51 Pegasi, détectée à partir d'observations de l'Observation de Haute-Provence.
+Il s'agit de la 1ère planète connue en dehors du système solaire, ou "<strong>exoplanète</strong>".
+Cette découverte leur vaudra le prix Nobel de Physique en 2019.</p>
+<p>Depuis, des milliers d'exoplanètes ont été découvertes, avec plusieurs techniques d'observation.</p>
+<p>Le projet "<strong>exoplanet.eu</strong>" propose une base de donnée en ligne de toutes les exoplanètes connues.
+Sur le site web du projet, il est possible de télécharger au <strong>format CSV</strong> un tableau contenant les caractéristiques de chacune de ces exoplanètes, à des fins d'analyse de données.</p>
+<p>Vous pouvez consulter ce site ici : <a href="https://exoplanet.eu">site de exoplanet.eu</a>.</p>
+<p>Un extrait de ce tableau a été récupéré en avril 2026 sur le site d'exoplanet.eu, que vous trouverez <a href="https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/exoplanet_catalogue_2026.csv">ici</a>.</p>
+<p>Il contient entre autres pour chaque exoplanète les 2 informations suivantes : sa <strong>masse</strong> (en ratio par rapport à la masse de Jupiter) et sa <strong>période orbitale</strong> autour de son étoile (en jours terrestres).</p>
+<p>Nous savons qu'il existe différents types de planètes dans le système solaire (telluriques, géantes gazeuses, géantes glacées, etc.), ayant des masses et des périodes orbitales différente.
+On peut donc légitimement se poser la question suivante : </p>
+<p><em>Est-il possible de discriminer les différents types d'exoplanètes à partir de ces mêmes informations ?</em></p>
+<p>On reconnait dans cette question un problème de <strong>partition</strong> (ou classification non-supervisée).</p>
+<h2 id="objectifs">Objectifs</h2>
+<p>Lors de ce tutoriel, nous allons programmer une <strong>chaîne de partitionnement de données</strong> sous la forme d'un <strong>script Python</strong>, que nous utiliserons pour explorer les différents <strong>types d'exoplanètes</strong>.</p>
+<p>Ce script Python devra :</p>
+<ul>
+<li>
+<p>Importer les données du fichier CSV sous la forme d'un "DataFrame" <code>pandas</code>.</p>
+</li>
+<li>
+<p>Appliquer une transformation de mise à l'échelle aux données.</p>
+</li>
+<li>
+<p>Réaliser un partitionnement "par partition" avec la méthode des K-moyennes, en choisissant un nombre de classes optimal.</p>
+</li>
+<li>
+<p>Réaliser un partitionnement "hiérarchique" avec la méthode de la CAH, en affichant un dendrogramme.</p>
+</li>
+<li>
+<p>Analyser les caractéristiques des différentes classes afin de les labéliser.</p>
+</li>
+</ul>
+<p>Votre script se basera sur la bibliothèque Python <code>Scikit-Learn</code>, qui propose de nombreuses méthodes de Machine-Learning.
+Nous utiliserons également la bibliothèque <code>pandas</code> pour la manipulation des données, et la bibliothèque <code>seaborn</code> pour les affichages graphiques.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Nota Bene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Il est à noter que le problème que nous cherchons à résoudre ici est en réalité déjà résolu : classifier les exoplanètes à partir de leur masse et leur période orbitale est classique en planétologie.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="importation-des-donnees">Importation des données</h2>
+<h3 id="le-format-csv">Le format CSV</h3>
+<p>Pour enregistrer une base de données sous la forme d'un tableau, on utilise couramment le format <strong>CSV</strong> : "Comma Separated Values".</p>
+<p>Il s'agit d'un format ouvert, compréhensible par un humain, qui peut être lu par n'importe quel éditeur de texte.
+L'extension d'un fichier CSV est simplement "<strong>.csv</strong>".</p>
+<p>Comme son nom l'indique, un fichier CSV s'organise de la manière suivante :</p>
+<ul>
+<li>
+<p><strong>Chaque ligne correspond à une ligne du tableau</strong>. Les lignes sont séparées par un retour à la ligne "\n".</p>
+</li>
+<li>
+<p>Au sein d'une ligne, <strong>les éléments de chaque colonnes sont séparés par des virgules</strong> ",".</p>
+</li>
+<li>
+<p>La <strong>première ligne</strong> est souvent considérée comme l'<strong>en-tête</strong> du tableau (le nom des colonnes).</p>
+</li>
+</ul>
+<p>D'où le nom "Comma Separated Values".</p>
+<p>En général, les <strong>colonnes</strong> représentent les différentes <strong>variables</strong>, et les <strong>lignes</strong> les différents <strong>individus</strong> de la base de données.</p>
+<p>Voici un exemple de tableau : </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Name</th>
+<th style="text-align: center;">Mass</th>
+<th style="text-align: center;">Period</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">109 Psc b</td>
+<td style="text-align: center;">5.743</td>
+<td style="text-align: center;">1075.4</td>
+</tr>
+<tr>
+<td style="text-align: center;">112 Psc c</td>
+<td style="text-align: center;">9.866</td>
+<td style="text-align: center;">36336.7</td>
+</tr>
+<tr>
+<td style="text-align: center;">14 Her b</td>
+<td style="text-align: center;">8.900</td>
+<td style="text-align: center;">1767.56</td>
+</tr>
+<tr>
+<td style="text-align: center;">14 Her c</td>
+<td style="text-align: center;">7.900</td>
+<td style="text-align: center;">52160.0</td>
+</tr>
+<tr>
+<td style="text-align: center;">51 Eri Ab</td>
+<td style="text-align: center;">4.100</td>
+<td style="text-align: center;">10260.0</td>
+</tr>
+</tbody>
+</table>
+<p>Sa conversion en format CSV sera tout simplement :</p>
+<pre><code>Name,Mass,Period
+109 Psc b,5.743,1075.4
+112 Psc c,9.866,36336.7
+14 Her b,8.900,1767.56
+14 Her c,7.900,52160.0
+51 Eri Ab,4.100,10260.0
+</code></pre>
+<p>Vous pouvez ouvrir dans un éditeur de texte notre fichier CSV extrait de exoplanet.eu, pour essayer d'en comprendre le contenu.</p>
+<p>Il peut être importé par la plupart des logiciels tableurs (Excel, OpenOffice Calc), et sous Python avec la bibliothèque <code>pandas</code>.</p>
+<h3 id="importation-avec-pandas">Importation avec Pandas</h3>
+<p>Pour importer un tableau sous Python à partir d'un fichier CSV, nous allons utiliser la bibliothèque <code>pandas</code>.</p>
+<p>Il ne faudra donc pas oublier d'importer <code>pandas</code> en début de script :</p>
+<pre><code>import pandas as pd
+</code></pre>
+<p>Pour importer notre fichier, il faudra utiliser la méthode <code>read_csv</code>.
+Par exemple, pour un fichier CSV se situant à un chemin <code>input_path</code> sur votre ordinateur :</p>
+<pre><code>df_dataset = pd.read_csv(input_path)
+</code></pre>
+<p>Le tableau sera stocké sous la forme d'un <strong>DataFrame</strong> nommé <code>df_dataset</code>.</p>
+<p><strong>Ajoutez à votre script Python l'importation de notre fichier CSV</strong>.</p>
+<p>Vous pouvez tester votre script pour vérifier que le DataFrame contient bien le tableau attendu.</p>
+<h3 id="tri-des-donnees">Tri des données</h3>
+<p>En regardant le contenu du tableau chargé, vous avez dû remarquer qu'il contient 98 colonnes et 6414 lignes, soit <strong>98 variables</strong> et <strong>6414 exoplanètes</strong>.</p>
+<p>Or, pour notre problème nous n'avons besoin que de 2 variables : la masse et la période orbitale de chaque planète.</p>
+<p>Il nous faut donc sélectionner les 2 colonnes correspondantes : <code>mass</code> et <code>orbital_period</code>.
+Ceci est faisable avec un simple :</p>
+<pre><code>df_dataset = df_dataset[['mass','orbital_period']]
+</code></pre>
+<p><strong>Ajoutez à votre script Python la sélection de ces 2 colonnes du DataFrame.</strong></p>
+<p>Si vous regardez attentivement le DataFrame obtenu, vous devriez vous apercevoir que certaines lignes contiennent des <code>nan</code>.</p>
+<p>Il s'agit des initiales de "<strong>Not A Number</strong>" : une valeur donnée au résultat d'une opération invalide, selon la norme IEEE 754.
+Les NaN sont souvent utilisés en analyse de données pour représenter une <strong>valeur manquante</strong>.
+C'est le cas ici.</p>
+<p>Nous pouvons donc éliminer du tableau les lignes contenant un NaN pour au moins une des 2 variables.</p>
+<p>Pour ce faire, il suffit d'utiliser la méthode <code>dropna</code> des DataFrame :</p>
+<pre><code>df_dataset = df_dataset.dropna()
+</code></pre>
+<p><strong>Ajoutez à votre script Python l'élimination des lignes du DataFrame contenant des NaN.</strong></p>
+<p>Si vous testez à nouveau votre script Python, le nouveau DataFrame obtenu après tri devrait contenir 2 colonnes et 1989 lignes.
+Nous avons donc <strong>1989 exoplanètes</strong> dont la masse et la période orbitale sont connues.</p>
+<h2 id="analyse-des-donnees">Analyse des données</h2>
+<p>Le réflexe à avoir lorsque l'on veut réaliser une partition de données, et de réaliser au préalable une analyse visuelle des données afin de vérifier si vouloir réaliser une partition a ici un sens.</p>
+<p>Pour les affichages graphiques, nous allons utiliser la bibliothèque <code>seaborn</code>.
+Il ne faut donc pas oublier de l'ajouter au début de votre script :</p>
+<pre><code>import seaborn as sns
+</code></pre>
+<p>Dans notre exemple, nous sommes en 2D, car nous n'avons retenu que 2 variables.
+Visualiser les données est donc ici très simple.</p>
+<p>Pour commencer, vous pouvez afficher un <strong>nuage de points</strong> des exoplanètes en fonction de leur masse et période orbitale.</p>
+<p>Il suffit d'utiliser la méthode <code>scatterplot</code> de <code>seaborn</code> : </p>
+<pre><code>sns.scatterplot(data=df_dataset,x='orbital_period',y='mass')
+</code></pre>
+<p>Si vous affichez votre nuage de points avec des axes linéaires, vous obtenez probablement un résultat illisible.</p>
+<p>C'est normal, comme beaucoup de grandeurs en physique, la masse et la période orbitale des exoplanètes varient sur plusieurs ordres de grandeurs.</p>
+<p>Il vaut donc mieux afficher le graphique avec des axes <strong>logarithmiques</strong>.
+Ceci est possible en ajoutant à votre programme :</p>
+<pre><code>plt.xscale(&quot;log&quot;)
+plt.yscale(&quot;log&quot;)
+</code></pre>
+<p><strong>Ajoutez cet affichage graphique à votre script Python.</strong></p>
+<p>Vous devriez alors obtenir un graphique similaire à celui-ci :</p>
+<p><img alt="Nuage de points" src="../img/Exoplanets_scatter_points.png" /></p>
+<p>On peut déjà noter que quelques groupes de points se démarquent.
+Mais la grande quantité de points rend difficile à visualiser la densité de planètes dans certaines zones du graphique.</p>
+<p>Une solution pour aider à visualiser les "groupes" d'exoplanètes dans le graphique est d'afficher un <strong>histogramme 2D</strong>.</p>
+<p>Avec <code>seaborn</code>, il suffit d'utiliser la méthode <code>histplot</code>, en n'oubliant pas d'indiquer que l'on veut des axes logarithmiques :</p>
+<pre><code>sns.histplot(data=df_dataset,x=&quot;orbital_period&quot;,y=&quot;mass&quot;,bins=30,log_scale=(True,True),cbar=True)
+</code></pre>
+<p>Le paramètres <code>bin</code> permet de définir le nombre d'intervalles de l'histogramme selon l'axe horizontal et l'axe vertical.</p>
+<p><strong>Ajoutez ce nouvel affichage graphique à votre script Python.</strong></p>
+<p>Vous devriez alors obtenir un graphique similaire à celui-ci :</p>
+<p><img alt="Histogramme 2D" src="../img/Exoplanets_2D_histogram.png" /></p>
+<p>A partir de ces graphiques, posez-vous les questions suivantes :</p>
+<p><em>Remarquez-vous des groupes d'exoplanètes ressortir ? Si oui, combien ?</em></p>
+<p><em>Pensez-vous que la partitionnement a ici un sens ? Va-t-il être simple ?</em></p>
+<p>Ces questions font appel aux 2 critères d'une "bonne partition" :</p>
+<ul>
+<li>
+<p>Les individus d'une même classe doivent être les plus similaires possibles.</p>
+</li>
+<li>
+<p>Les classes doivent être les plus différentes possibles.</p>
+</li>
+</ul>
+<p>Il faudra garder ces critères en tête pendant la suite de ce tutoriel.</p>
+<h2 id="preparation-des-donnees">Préparation des données</h2>
+<p>Maintenant que nous avons vérifié la pertinence de vouloir séparer différentes classes d'exoplanètes à partir de leur masse et de leur période orbitale, nous pouvons passer à la <strong>préparation des données</strong> pour le paritionnement.</p>
+<p>En effet, nous avons vu précédemment qu'en échelle linéaire, il était difficile de distinguer quoi que ce soit dans nos données.
+Une méthode de partitionnement aura donc également du mal à séparer des groupes ayant un sens physique dans ces données si nous n'opérons pas une <strong>transformation</strong>.</p>
+<p>Assez logiquement, nous allons opérer ici une <strong>transformation logarithmique</strong>.</p>
+<p>Pour définir une transformation à appliquer à des données, on peut se servir de la méthode <code>FunctionTransformer</code> de la bibliothèque "Scikit-Learn" (<code>sklearn</code>).</p>
+<p>Il ne faut donc pas oublier de l'importer en début de script : </p>
+<pre><code>from sklearn.preprocessing import FunctionTransformer
+</code></pre>
+<p>Il faut ensuite définir la fonction que l'on veut appliquer aux données pour réaliser notre transformation :</p>
+<pre><code>log_transformer = FunctionTransformer(func=np.log10,inverse_func=lambda x: 10**x)
+</code></pre>
+<p>Il est possible de définir la fonction inverse, afin de pouvoir facilement revenir aux données de base.</p>
+<p>Il est également à noter que si des paramètres de la fonction dépendent des données (comme le centrage-réduction par exemple), il faudra d'abord ajuster la fonction aux données avec la méthode <code>fit</code>.</p>
+<p>On peut alors appliquer la transformation que nous venons de définir à nos données :</p>
+<pre><code>df_dataset[['orbital_period','mass']] = pd.DataFrame(log_transformer.transform(df_dataset))
+</code></pre>
+<p><strong>Ajoutez la transformation logarithmique des données à votre script Python, avant tout partitionnement</strong>.</p>
+<h2 id="partitionnement-par-partition">Partitionnement par partition.</h2>
+<p>Nous allons à présent essayer de <strong>partitionner</strong> nos données en différentes classes d'exoplanètes.</p>
+<p>Pour ce faire, nous allons commencer par appliquer la très classique méthode des <strong>K-moyennes</strong>.</p>
+<h3 id="les-k-moyennes">Les K-moyennes</h3>
+<p>Les <strong>K-moyennes</strong> sont une méthode de partionnement "<strong>par partition</strong>", c'est-à-dire que l'on sépare les données en classes, sans établir de liens entre les classes obtenues.</p>
+<p>Il s'agit d'un algorithme <strong>itératif</strong>, cherchant à réduire à chaque itération ce que l'on appelle "<strong>l'inertie intra-classe</strong>", à partir d'une partition initiale aléatoire. 
+L'idée est d'essayer de faire converger le modèle vers la partition minimisant cette inertie intra-classe.
+Le <strong>nombre de classes</strong> est un paramètre d'entrée de l'algorithme.</p>
+<p>Il existe une implémentation <code>sklearn</code> des K-moyennes, que nous allons utiliser lors de ce tutoriel.</p>
+<p>N'oubliez donc pas de l'importer en début de script :</p>
+<pre><code>from sklearn.cluster import KMeans
+</code></pre>
+<p>Pour initialiser un modèle <code>km</code> des K-moyennes avec <code>sklearn</code>, pour un nombre de classes <code>k</code>, il suffit d'écrire :</p>
+<pre><code>km = KMeans(n_clusters=k,random_state=0)
+</code></pre>
+<p>L'initialisation des K-moyennes étant aléatoire, le paramètre <code>random_state</code> permet de figer la graine aléatoire, afin de toujours obtenir le même résultat en sortie.</p>
+<p>Pour obtenir la partition des données sous la forme d'une variable <code>clusters</code>, il suffit d'utiliser la méthode <code>fit_predict</code> :</p>
+<pre><code>clusters = km.fit_predict(df_dataset)
+</code></pre>
+<p>La variable de sortie contiendra les classes attribuées à chaque individu, sous la forme de numéros.</p>
+<p>Enfin, l'inertie intra-classe de la partition obtenue est stockée dans l'attribut <code>inertia_</code>.
+Pour la récupérer sous la forme d'une variable <code>inertia</code>, il suffit d'écrire :</p>
+<pre><code>inertia = km.inertia_
+</code></pre>
+<p>Vous trouverez dans la section suivante un rappel sur ce qu'est l'inertie intra-classe et ce qu'elle représente.</p>
+<h3 id="rappels-sur-linertie-intra-classe">Rappels sur l'inertie intra-classe</h3>
+<p>L'<strong>inertie d'une classe</strong> <span class="arithmatex">\(i\)</span> contenant <span class="arithmatex">\(n_i\)</span> individus est définie comme la somme des distances <span class="arithmatex">\(d\)</span> au barycentre <span class="arithmatex">\(g_i\)</span> de la classe :</p>
+<p><span class="arithmatex">\(I_i = \sum_{j=1}^{n_i} d(x_{i,j},g_i)^2\)</span></p>
+<p>où chaque <span class="arithmatex">\(x_{i,j}\)</span> est un vecteur contenant les réalisations des différentes features pour un individu de la classe <span class="arithmatex">\(i\)</span>.</p>
+<p>On définit le <strong>barycentre</strong> comme :</p>
+<p><span class="arithmatex">\(g_i = \frac{1}{n_i} \sum_{j=1}^{n_i} x_{i,j}\)</span></p>
+<p>Et la mesure de distance choisie est en général la distance euclidienne.</p>
+<p>On définit alors l'<strong>inertie intra-classe</strong> comme étant la somme des inerties des <span class="arithmatex">\(k\)</span> classes :</p>
+<p><span class="arithmatex">\(I = \sum_{i=1}^{k} I_i = \sum_{i=1}^{k} \sum_{j=1}^{n_i} d(x_{i,j},g_i)^2\)</span></p>
+<p>Il s'agit d'un indicateur de la <strong>similarité des individus au sein de chaque classe</strong>.</p>
+<p>Par opposition, l'<strong>inertie inter-classe</strong> est quant à elle définie comme :</p>
+<p><span class="arithmatex">\(J = \sum_{i=1}^{k} n_i d(g_i,g)^2\)</span></p>
+<p>avec <span class="arithmatex">\(g = \frac{1}{\sum_{i=1}^{k} n_i} \sum_{i=1}^{k} \sum_{j=1}^{n_i} x_{i,j}\)</span> le barycentre du jeu de données complet.</p>
+<p>Il s'agit d'un indicateur de la <strong>dissimilarité des différentes classes</strong>.</p>
+<p>Nous avons dit plus tôt que lors d'une partition de données, on cherche à minimiser la similarité intra-classe, et maximiser la dissimilarité inter-classe, ce qui revient à dire <strong>minimiser <span class="arithmatex">\(I\)</span></strong> et <strong>maximiser <span class="arithmatex">\(J\)</span></strong>.</p>
+<p>Or, la somme <span class="arithmatex">\(T = I+J\)</span>, aussi appelée "<strong>inertie totale</strong>" est <strong>constante</strong> pour un <strong>même jeu de donnée</strong> et un <strong>même nombre de classes</strong>, quelque soit la partition choisie.</p>
+<p>D'où le fait que les K-moyennes cherchent juste à <strong>minimiser l'inertie intra-classe</strong> .</p>
+<h3 id="la-methode-du-coude">La méthode du coude</h3>
+<p>Comme nous l'avons indiqué précédemment, le <strong>nombre de classes</strong> de la partition à réaliser est <strong>une entrée</strong> de l'algorithme des K-moyennes.</p>
+<p><em>Mais comment le choisir objectivement sans a priori sur la structure des données ?</em></p>
+<p>Si l'inertie intra-classe est constante pour un nombre de classes fixe, l'inertie intra-classe de la partition optimale pour un nombre de classes donné va <strong>diminuer si on augmente le nombre de classes</strong>.</p>
+<p>Ceci est lié au fait que le nombre d'individus par classe diminue à mesure que l'on augmente le nombre de classes.</p>
+<p>Mais attention ! Choisir le nombre classes donnant l'inertie intra-classe la plus faible ne donnera pas un résultat satisfaisant : une partition ayant autant de classes que d'individu aura une inertie intra-classe de 0, mais ne servira pas à grand chose...</p>
+<p>C'est pourquoi on va plutôt chercher le nombre de classes à partir duquel l'inertie intra-classe ne diminue plus significativement.
+C'est ce que l'on appelle la <strong>méthode du coude</strong>.</p>
+<p>Le principe est le suivant : on applique les K-moyennes à nos données pour un nombre de classes croissant, puis on affiche l'inertie intra-classe obtenue pour chaque nombre de classes.
+On retiendra le nombre de classes pour lequel la courbe forme un "<strong>coude</strong>".
+D'où le nom de la méthode.</p>
+<p><strong>Ajoutez l'affichage de l'inertie intra-classe en fonction du nombre de classes à votre script Python</strong>.</p>
+<p>Vous devriez obtenir un graphique similaire à celui-ci :</p>
+<p><img alt="Méthode du coude" src="../img/Exoplanets_inertia.png" /></p>
+<p><em>A partir de ce graphique, quel nombre de classes choisiriez-vous ?</em></p>
+<h3 id="resultat">Résultat</h3>
+<p>Admettons que vous ayez choisi un nombre de classes égal à 3.</p>
+<p>On peut initialiser un nouveau modèle <code>km</code> pour 3 classes, récupérer la partition sous la forme d'une variable <code>clusters</code>, et l'ajouter comme une nouvelle colonne <code>clusters</code> au DataFrame <code>df_dataset</code> avec le programme :</p>
+<pre><code>km = KMeans(n_clusters=3,random_state=0)
+
+clusters = km.fit_predict(df_dataset)
+
+df_dataset['clusters'] = clusters
+
+df_dataset[['orbital_period','mass']] = pd.DataFrame(log_transformer.inverse_transform(df_dataset[['orbital_period','mass']]))
+</code></pre>
+<p>On notera que l'on a utilisé la fonction inverse de <code>log_transformer</code> afin de remettre les variables en échelle linéaire pour l'affichage.</p>
+<p><strong>Ajoutez à votre script Python le partitionnement de nos données en 3 classes, avec les K-moyennes</strong>.</p>
+<p>Affichez ensuite le résultat sous la forme d'un nuage de points, avec des couleurs différentes pour les 3 classes.</p>
+<p>Vous devriez obtenir un graphique similaire à celui-ci :</p>
+<p><img alt="Résultat des K-moyennes" src="../img/Exoplanets_k_means.png" /></p>
+<p>Cette partition est probablement très similaire aux groupes de planètes que vous auriez instinctivement tracés à la main.</p>
+<p><em>Mais comment juger objectivement le résultat d'un partitionnement ?</em></p>
+<p>Il nous faut un critère de performance.</p>
+<h3 id="coefficient-de-silhouette">Coefficient de silhouette</h3>
+<p>Un critère classique pour juger un partitionnement est le <strong>coefficient de silhouette</strong>.</p>
+<p>Pour chaque individu de la base de données, il est définit comme :</p>
+<p><span class="arithmatex">\(s(x_{i,j}) = \frac{D_2(x_{i,j})-D_1(x_{i,j})}{max(D_1(x_{i,j}),D_2(x_{i,j}))}\)</span></p>
+<p>Avec <span class="arithmatex">\(D_1\)</span> la <strong>distance moyenne intra-classe</strong> :</p>
+<p><span class="arithmatex">\(D_1(x_{i,j}) = \frac{1}{n_i-1} \sum_{m=1,m \neq j}^{n_i} d(x_{i,m},x_{i,j})\)</span></p>
+<p>Il s'agit d'un indicateur de la <strong>similarité</strong> d'un individu au reste de sa classe : plus il est faible, plus l'individu est proche du reste de sa classe.</p>
+<p>Et <span class="arithmatex">\(D_2\)</span> la <strong>distance moyenne à la classe la plus proche</strong> :</p>
+<p><span class="arithmatex">\(D_2(x_{i,j}) = min_{1 \leq l \leq k, l \neq i}(\frac{1}{n_l} \sum_{m=1}^{n_l} d(x_{l,m},x_{i,j}))\)</span></p>
+<p>Il s'agit d'un indicateur de <strong>dissimilarité</strong> d'un individus par rapport à la classe la plus proche de la sienne : plus il est élevé, plus l'individu est séparable des autres classes</p>
+<p>Le coefficient de silhouette est un score compris entre -1 et 1.
+Si pour un individu :</p>
+<ul>
+<li>
+<p><span class="arithmatex">\(s(x_{i,j}) \approx 1\)</span> alors l'individu est correctement identifié à sa classe.</p>
+</li>
+<li>
+<p><span class="arithmatex">\(s(x_{i,j}) = 0\)</span> alors l'individu est à la frontière entre 2 classes.</p>
+</li>
+<li>
+<p><span class="arithmatex">\(s(x_{i,j}) &lt; 0\)</span> alors l'individu est mal identifié à sa classe.</p>
+</li>
+</ul>
+<p>On affiche souvent les coefficients de silhouette des différents individus sous la forme d'un histogramme, avec des couleurs différentes pour les classes.</p>
+<p>On peut aussi utiliser le coefficient de silhouette moyen <span class="arithmatex">\(S = \frac{1}{\sum_{i=1}^{k} n_i} \sum_{i=1}^{k} \sum_{j=1}^{n_i} s(x_{i,j})\)</span> comme mesure de la qualité générale d'une partition de données.</p>
+<p>Il existe une implémentation du coefficient de silhouette dans <code>sklearn</code>, qu'il ne faut pas oublier d'importer en début de script Python :</p>
+<pre><code>from sklearn.metrics import silhouette_score,silhouette_samples
+</code></pre>
+<p>En revanche, il n'existe pas de méthode toute faite pour afficher un histogramme des valeurs du coefficient de silhouette.
+Vous pouvez donc utiliser le morceau de programme suivant :</p>
+<pre><code>sample_scores = silhouette_samples(df_dataset,clusters)
+
+score = silhouette_score(df_dataset,clusters)
+
+fig, ax = plt.subplots()
+
+y_lower = 10
+for idx in range(3):
+    sample_scores_idx = sample_scores[clusters == idx]
+    sample_scores_idx.sort()
+
+    size_cluster_idx = sample_scores_idx.shape[0]
+    y_upper = y_lower + size_cluster_idx
+
+    color = plt.cm.tab10(idx)
+    ax.fill_betweenx(
+        np.arange(y_lower, y_upper),
+        0,
+        sample_scores_idx,
+        facecolor=color,
+        edgecolor=color,
+        alpha=0.7
+    )
+
+    ax.text(-0.05, y_lower + 0.5 * size_cluster_idx, str(idx))
+    y_lower = y_upper + 10
+
+ax.axvline(x=score,color=&quot;red&quot;,linestyle=&quot;--&quot;)
+
+ax.set_yticks([])
+ax.set_xlim([-1, 1])
+ax.set_xlabel(&quot;Coefficient de silhouette&quot;,fontsize=12)
+ax.set_ylabel(&quot;Classes&quot;,fontsize=12)
+</code></pre>
+<p><strong>Ajoutez à votre script Python l'affichage d'un histogramme de coefficients de silhouettes pour votre partition des exoplanètes</strong>.</p>
+<p>Vous devriez obtenir un graphique similaire à celui-ci :</p>
+<p><img alt="Coefficient de silhouette" src="../img/Exoplanets_silhouette.png" /></p>
+<p><em>Les exoplanètes sont-elles bien attribuées à leur classe pour les 3 classes ?</em></p>
+<p><em>De manière générale, comment jugez-vous cette partition ?</em></p>
+<h2 id="partitionnement-hierarchique">Partitionnement hiérarchique</h2>
+<p>Si la méthode de partitionnement "par partition" que nous venons de voir est peu gourmande en temps de calcul, pour un résultat plutôt satisfaisant, elle ne permet pas en revanche de <strong>tracer des liens</strong> entre les classes : on ne sait pas quelles classes sont les plus proches ou les plus éloignées.</p>
+<p>Les méthodes de partitionnement "<strong>hiérarchique</strong>" en revanche, permettent d'établir les liens entre les classes, au prix d'un temps de calcul plus élevé.</p>
+<p>Nous allons appliquer à nos données la plus classique des méthodes hiérarchiques : la <strong>Classification Ascendante Hiérachique</strong> (ou CAH).</p>
+<h3 id="cah">CAH</h3>
+<p>La <strong>CAH</strong> est une méthode <strong>itérative</strong>, <strong>fusionnant</strong> les 2 classes <strong>les plus similaires</strong> à chaque itération.</p>
+<p>Elle s'initialise en considérant chaque individu comme unique représentant de sa propre classe : on a autant de classes que d'individu, <strong>l'inertie intra-classe est nulle</strong>.</p>
+<p>Elle se termine une fois que toutes les classes ont été fusionnées : on a une unique classe, <strong>l'inertie inter-classe est nulle</strong>.</p>
+<p>Toutes les fusions sont <strong>gardées en mémoire</strong>, de manière à pouvoir choisir la partition ayant le <strong>nombre de classes optimal</strong> a posteriori.</p>
+<p>Cette méthode implique donc de choisir un <strong>critère de similarité</strong> entre 2 classes.
+Voici les 4 principaux critères utilisables par la CAH pour mesurer la similarité entre 2 classes :</p>
+<ul>
+<li>
+<p><strong>Lien simple</strong> : la distance minimale entre 2 individus issus de ces 2 classes.</p>
+</li>
+<li>
+<p><strong>Lien complet</strong> : la distance maximale entre 2 individus issus de ces 2 classes.</p>
+</li>
+<li>
+<p><strong>Lien moyen</strong> : la moyenne des distances entre tous les couples d'individus issus des 2 classes possibles.</p>
+</li>
+<li>
+<p><strong>Critère de Ward</strong> : l'augmentation de l'inertie intra-classe quand les 2 classes sont fusionnées.</p>
+</li>
+</ul>
+<p>Le choix de critère dépend de la définition de "similarité" la plus appropriée pour un problème donné.</p>
+<p>Lors de ce tutoriel, nous utiliserons le <strong>critère de Ward</strong>, qui est souvent le choix par défaut.</p>
+<h3 id="dendrogramme">Dendrogramme</h3>
+<p>Comme nous l'avons expliqué plus tôt, les fusions sont gardées en mémoire par la CAH, afin que nous puissions choisir une partition pour un nombre de classe donné a posteriori.</p>
+<p>Pour réaliser ce choix, on affiche en général un type de représentation graphique des différentes fusion appelé "<strong>dendrogramme</strong>".
+Il s'agit d'un arbre représentant les liens entre classes (en abscisse) et leurs distances (en ordonnée).</p>
+<p>Pour générer un dendrogramme, on peut utiliser la méthode <code>dendrogram</code> de <code>scipy</code>.
+Il faut donc penser à l'importer en début de script Python :</p>
+<pre><code>from scipy.cluster.hierarchy import dendrogram
+</code></pre>
+<p>En revanche, il n'existe pas de méthode toute faite pour afficher le dendrogramme sous la forme d'un graphique.
+Voici donc une fonction Python pour le faire, qui fait elle-même appel à la méthode <code>dendrogram</code> de <code>scipy</code> :</p>
+<pre><code>def plot_dendrogram(model, **kwargs):
+
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+
+    for i, merge in enumerate(model.children_):
+        current_count = 0
+        for child_idx in merge:
+            if child_idx &lt; n_samples:
+                current_count += 1
+            else:
+                current_count += counts[child_idx - n_samples]
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack([
+        model.children_,
+        model.distances_,
+        counts
+    ]).astype(float)
+
+    dendrogram(linkage_matrix, **kwargs)
+</code></pre>
+<p>On peut ensuite initialiser un modèle <code>hca</code> de <strong>CAH</strong> avec le <strong>lien de Ward</strong>, et générer un partitionnement avec la méthode <code>fit</code> :</p>
+<pre><code>hca = AgglomerativeClustering(distance_threshold=0,n_clusters=None,linkage='ward')
+hca.fit(df_dataset)
+</code></pre>
+<p>Les paramètres pour initialiser <code>hca</code> on été choisis pour réaliser toutes les itérations de la CAH, jusqu'à ce que tous les individus soient dans une même classe.
+Nous verrons qu'il est également possible de faire s'arrêter l'algorithme lorsque le nombre de classes désiré est atteint.</p>
+<p>Enfin, on peut réaliser l'affichage du dendrogramme avec notre fonction <code>plot_dendrogram</code> et <code>matplotlib</code> :</p>
+<pre><code>plt.figure()
+plot_dendrogram(hca,truncate_mode=&quot;level&quot;)
+plt.xlabel(&quot;Classes&quot;,fontsize=12)
+plt.ylabel(&quot;Distance entre classes&quot;,fontsize=12)
+plt.xticks([])
+plt.show()
+</code></pre>
+<p>N'oubliez pas d'importer <code>matplotlib</code> en début de script Python avec :</p>
+<pre><code>import matplotlib.pyplot as plt
+</code></pre>
+<p><strong>Ajoutez à votre script Python l'affichage d'un dendrogramme de la partition de nos données réalisée par la CAH</strong>.</p>
+<p>Vous devriez obtenir un graphique similaire à celui-ci :</p>
+<p><img alt="Dendrogramme" src="../img/Exoplanets_dendrogramme.png" /></p>
+<p><em>Ce dendrogramme confirme-t-il le choix de 3 classes que nous avons fait pour le partitionnement "par partition" ?</em></p>
+<h3 id="resultat_1">Résultat</h3>
+<p>Nous allons à présent utiliser la CAH pour obtenir une partition des exoplanètes en 3 classes.</p>
+<p>Comme pour le partitionnement "par partition", nous pouvons initialiser un nouveau modèle <code>hca</code> pour 3 classes, récupérer la partition sous la forme d'une variable <code>clusters</code>, et l'ajouter comme une nouvelle colonne <code>clusters</code> au DataFrame <code>df_dataset</code> avec le programme :</p>
+<pre><code>hca = AgglomerativeClustering(n_clusters=3,linkage='ward')
+
+clusters = hca.fit_predict(df_dataset)
+
+df_dataset['clusters'] = clusters
+
+df_dataset[['orbital_period','mass']] = pd.DataFrame(log_transformer.inverse_transform(df_dataset[['orbital_period','mass']]))
+</code></pre>
+<p><strong>Ajoutez à votre script Python le partitionnement de nos données en 3 classes, avec la CAH</strong>.</p>
+<p>Affichez ensuite le résultat sous la forme d'un nuage de points, avec des couleurs différentes pour les 3 classes.</p>
+<p>Vous devriez obtenir un graphique similaire à celui-ci :</p>
+<p><img alt="Résultat de la CAH" src="../img/Exoplanets_CAH.png" /></p>
+<p><em>Le résultat est-il différent de celui obtenu avec le partitionnement "par partition" ?</em></p>
+<p>Vous pouvez essayer de changer le type de lien utilisé (simple, complet ou moyen), pour voir l'effet sur la partition obtenue.</p>
+<h2 id="labelisation">Labélisation</h2>
+<h3 id="caracterisation-des-classes">Caractérisation des classes</h3>
+<p>L'étape ultime de tout partitionnement est la <strong>labélisation</strong> : identifier à quoi correspondent les différentes classes obtenues, et vérifier si elles ont un sens physique.</p>
+<p>Pour ce faire, on va chercher à <strong>caractériser</strong> chaque classe par des <strong>indicateurs statistiques</strong> (moyenne, médiane, écart-type, quantiles, etc.).</p>
+<p>Il existe des méthodes <code>mean</code>, <code>median</code>, <code>quantile</code> des DataFrames pour calculer ces indicateurs.</p>
+<p><strong>Ajoutez à votre script Python le calcul de la médiane et des pourcentiles 1% et 99% de chaque variable (masse et période orbitale) pour les 3 classes déterminées par les K-moyennes ou la CAH</strong>.</p>
+<p><em>Quelles sont les caractéristiques des 3 types d'exoplanètes déterminés par notre partitionnement ? Quel label donneriez-vous alors chacune de ces classes ?</em></p>
+<h3 id="contexte-planetologique">Contexte planétologique</h3>
+<p>Pour vous aider à attribuer des labels plus précis à chacune des classes, voici un peu de <strong>contexte planétologique</strong>.</p>
+<p>Tout d'abord, voici quelques grands types d'exoplanètes identifiées par les astronomes, et leurs caractéristiques :</p>
+<ul>
+<li>
+<p>On appelle « <strong>Jupiter chaud</strong> » une exoplanète gazeuse ayant une masse du même ordre de grandeur que Jupiter, mais avec une période orbitale de l’ordre de quelques jours. 
+Le terme « chaud » vient du fait qu’une rotation aussi rapide implique une orbite proche de son étoile (3ème loi de Kepler).</p>
+</li>
+<li>
+<p>On appelle « <strong>Jupiter froid</strong> » une exoplanète gazeuse ayant une masse du même ordre de grandeur que Jupiter, mais avec une période orbitale de plusieurs milliers de jours. 
+Par opposition aux « Jupiters chauds », le terme « froid » vient du fait qu’une rotation plus lente implique une orbite plus loin de son étoile.</p>
+</li>
+<li>
+<p>On appelle « <strong>Neptunienne</strong> » ou « <strong>Mini-Neptune</strong> » une exoplanète gazeuse ayant une masse similaire ou inférieure à 0.05 masses de Jupiter (environ la masse de Neptune).</p>
+</li>
+<li>
+<p>On appelle « <strong>Super-Terre</strong> » une exoplanète tellurique ayant une masse supérieure à celle de la Terre, mais inférieure à 0.03 masses de Jupiter (10 masses terrestres environ).</p>
+</li>
+</ul>
+<p><em>A partir de ces informations, quel label donneriez-vous à chacune de vos 3 classes ?</em></p>
+<h3 id="discussion">Discussion</h3>
+<p>Une des grandes difficulté de la labélisation est de s'assurer que les labels donnés ont un <strong>sens physique intéressant</strong>.</p>
+<p>Voici les masses (en masses de Jupiter) et périodes orbitales (en jours) des planètes du système solaire :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Planète</th>
+<th style="text-align: center;">Masse</th>
+<th style="text-align: center;">Période orbitale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">Mercure</td>
+<td style="text-align: center;">0.00017</td>
+<td style="text-align: center;">88.0</td>
+</tr>
+<tr>
+<td style="text-align: center;">Vénus</td>
+<td style="text-align: center;">0.00257</td>
+<td style="text-align: center;">224.7</td>
+</tr>
+<tr>
+<td style="text-align: center;">Terre</td>
+<td style="text-align: center;">0.00315</td>
+<td style="text-align: center;">365.3</td>
+</tr>
+<tr>
+<td style="text-align: center;">Mars</td>
+<td style="text-align: center;">0.00034</td>
+<td style="text-align: center;">687.0</td>
+</tr>
+<tr>
+<td style="text-align: center;">Jupiter</td>
+<td style="text-align: center;">1.00000</td>
+<td style="text-align: center;">4332.6</td>
+</tr>
+<tr>
+<td style="text-align: center;">Saturne</td>
+<td style="text-align: center;">0.29946</td>
+<td style="text-align: center;">10759.2</td>
+</tr>
+<tr>
+<td style="text-align: center;">Uranus</td>
+<td style="text-align: center;">0.04573</td>
+<td style="text-align: center;">30688.5</td>
+</tr>
+<tr>
+<td style="text-align: center;">Neptune</td>
+<td style="text-align: center;">0.05395</td>
+<td style="text-align: center;">60182.0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tracez ces 8 planètes par-dessus les nuages de points que vous avez obtenus après partitionnement</strong>.</p>
+<p>Vous devriez obtenir un graphique similaire à celui-ci pour le résultat de la CAH :</p>
+<p><img alt="Résultat de la CAH avec les planètes du système solaire" src="../img/Exoplanets_CAH_solar_system.png" /></p>
+<p><em>Les planètes du système solaire ont-elles l'air de faire partie d'une de nos 3 classes ?</em></p>
+<p>Clairement, hormis pour Jupiter (et peut-être Saturne), il est difficile de ranger les planètes du système solaire dans une des 3 classes que nous avons déterminées.</p>
+<p><em>Mais d'où vient le problème ? Le système solaire est-il si unique ?</em></p>
+<p>Vous l'aurez probablement deviné : <strong>la méthode de détection !</strong></p>
+<p>En effet, les méthodes actuelles ne permettent pas encore de détecter des planètes aussi petites ou avec des périodes orbitales aussi faibles que celles du système solaire.
+Il y a donc probablement beaucoup de types d'exoplanètes que nous ne pouvons tout simplement pas observer.</p>
+<p>De plus, parmi les exoplanètes détectables, <strong>notre observation est probablement biaisée !</strong> </p>
+<p>Par exemple, une plus grande quantité d'exoplanètes d'un certain type dans nos données ne veut pas nécessairement dire qu'il s'agit d'un type plus commun.
+Il peut juste s'agir d'un type plus facilement détectable.</p>
+<p>De la même manière, les classes que notre partition séparent pourraient être simplement liées aux différentes méthodes d'observation.</p>
+<p><em>Comment vérifier que nous ne sommes pas biaisés par les méthodes d'observation ?</em></p>
+<p>Si vous reprenez le fichier CSV, vous verrez qu'il existe une colonne <code>detection_type</code>, correspondant au nom de la méthode de détection employée pour découvrir chaque exoplanète.</p>
+<p><strong>Affichez un nuage de point du même type que ceux tracés précédemment, mais en mettant une couleur différente pour chaque méthode de détection</strong>.</p>
+<p>Vous devriez obtenir un graphique similaire à celui-ci :</p>
+<p><img alt="Méthode de détection des exoplanètes" src="../img/Exoplanets_detection_types.png" /></p>
+<p>2 de nos 3 classes contiennent quasi-exclusivement des exoplanètes détectées par la <strong>méthode du transit</strong>.</p>
+<p>Cette méthode consiste à mesurer la baisse de luminosité observée au passage de la planète dans l'axe entre son étoile et la Terre.
+Elle a non seulement tendance à favoriser la découverte d'exoplanètes de taille plutôt importante, mais surtout de période orbitale courte.
+D'où le fait qu'elle soit liée à ces 2 classes.</p>
+<p>1 de nos 3 classes est plutôt associée à la <strong>méthode des vitesses radiales</strong> et à l'<strong>imagerie directe</strong>.</p>
+<p>On peut donc légitimement si certaines classes ne traduisent pas plutôt une différence de méthode d'observation plutôt que des types d'exoplanètes bien distincts.
+Mais la méthode d'observation pouvant favoriser certains types d'exoplanètes, c'est peut-être les 2.
+Difficile à dire...</p>
+<p>La leçon à en tirer : <strong>il faut toujours réfléchir à la pertinence des classes que l'on obtient au moment de labéliser une partition de données !</strong></p>
+<hr />
+<p><strong>C'était le dernier TP de ce cours !</strong></p>
+<p>N'hésitez pas à reprendre les différents tutoriels chez vous.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../TP_sentinel/" class="btn btn-neutral float-left" title="TP Sentinel"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../TP_sentinel/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
