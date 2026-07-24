@@ -64,19 +64,29 @@ Il existe même un score calculé à partir de ces 2 bandes pour indiquer la pr�
 
 Nous allons essayer de cartographier la région de Puerto Maldonado à partir d'une image satellite de Sentinel 2, acquise dans 4 bandes : B02 (bleu), B03 (vert), B04 (rouge) et B08 (proche-infrarouge).
 
-L'idée sera pour chaque pixel de l'image d'identifier à quel type de surface il correspond, à partir de sa couleur (c'est-à-dire la réflectivité perçue dans les différentes bandes).
+L'idée sera pour chaque pixel de l'image d'identifier automatiquement à quel type de surface il correspond, à partir de sa couleur (c'est-à-dire la réflectivité perçue dans les différentes bandes).
 
 Nous nous concentrerons sur les 4 types de surface suivants : "eau", "ville", "champs" et "forêt".
 
-
-
-_?_
+_Mais comment entrainer un modèle à identifier le type de pixel associé à chaque pixel à partir de sa couleur ?_
 
 On reconnait dans cette question un problème de **classification supervisée**.
 
 ## Objectifs
 
+Lors de ce tutoriel, nous allons programmer une **chaîne de classification supervisée** sous la forme d'un **script Python**, que nous utiliserons pour **cartographier la région de Puerto Maldonado**.
+
+Ce script Python devra :
+
+
+
 ## Importation des données
+
+![Image Sentinel 2 en 4 bandes](img/Sentinel_color_bands.png)
+
+![Image RGB en vraies couleurs](img/Sentinel_true_colors.png)
+
+![Image RGB en fausses couleurs](img/Sentinel_false_colors.png)
 
 ## Classification supervisée
 
