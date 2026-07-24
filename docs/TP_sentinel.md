@@ -78,9 +78,13 @@ Lors de ce tutoriel, nous allons programmer une **chaîne de classification supe
 
 Ce script Python devra :
 
-
+* 
 
 ## Importation des données
+
+### Les images GeoTIFF
+
+### Importation avec Rasterio
 
 ![Image Sentinel 2 en 4 bandes](img/Sentinel_color_bands.png)
 
