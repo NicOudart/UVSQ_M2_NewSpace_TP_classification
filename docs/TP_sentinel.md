@@ -78,21 +78,171 @@ Lors de ce tutoriel, nous allons programmer une **chaîne de classification supe
 
 Ce script Python devra :
 
-* 
+* Importer les données d'images GeoTIFF sous Python avec la bibliothèque `rasterio`.
+
+* Sélectionner des pixels labélisés pour générer une base de données d'entrainement et une base de données de test.
+
+* Appliquer une transformation de mise à l'échelle aux données.
+
+* Entrainer un classifieur "Naive Bayes" à identifier les pixels de l'image à partir de leur couleur.
+
+* Tester les performances en généralisation de ce classifieur.
+
+* Classifier les pixels de toute l'image.
+
+Votre script se basera sur la bibliothèque Python `Scikit-Learn`, qui propose de nombreuses méthodes de Machine-Learning.
+Nous utiliserons également la bibliothèque `rasterio` pour l'importer de GeoTIFF, la bibliothèque `pandas` pour la manipulation des données, et la bibliothèque `seaborn` pour les affichages graphiques.
+
+|Nota Bene|
+|:-|
+|Il est à noter que le problème que nous cherchons à résoudre ici est en réalité déjà résolu : il existe déjà de nombreux classifieurs d'images Sentinel 2.|
+|Aussi, il est à noter que l'approche "par pixel" a ses limites : un classifieur moderne considèrerait les pixels dans leur contexte.|
 
 ## Importation des données
 
 ### Les images GeoTIFF
 
+Le **TIFF** ("Tagged Image File Format") est un format d'image stockée de manière matricielle ("raster" en anglais).
+Comme son nom l'indique, ce format permet d'enregistrer des **métadonnées** en plus de l'image ("tag" en anglais).
+
+Le **GeoTIFF** utilise cette capacité du format TIFF pour ajouter des données de **géoréférencement** à des images.
+Ceci en fait le format idéal pour enregistrer des **images satellites** associées à des coordonnées de latitude et de longitude.
+
+Voici 4 fichiers GeoTIFF correspondant à la même image Sentinel 2 de la région de Puerto Maldonado, prise dans 4 bandes différentes :
+
+* B02 (bleu) : [cliquez ici](https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B02_(Raw).tiff).
+
+* B03 (vert) : [cliquez ici](https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B03_(Raw).tiff).
+
+* B04 (rouge) : [cliquez ici](https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B04_(Raw).tiff).
+
+* B08 (proche-infrarouge) : [cliquez ici](https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B08_(Raw).tiff).
+
+Ce format est lisible par certains logiciels de traitement d'image, et par des outils de géographes tels que QGIS.
+
+Pour importer ses images sous Python, nous utiliserons la bibliothèque `rasterio`.
+
 ### Importation avec Rasterio
+
+`Rasterio` est une bibliothèque Python faite pour la l'importation et l'exportation de fichiers GeoTIFF sous Python.
+
+Il ne faudra pas oublier de l'importer en début de script :
+
+~~~
+import rasterio
+~~~
+
+Pour importer chacun de nos GeoTIFF, il faudra utiliser la méthode `open`, puis la méthode `read`.
+Par exemple, pour un GeoTIFF situé à un chemin `input_path` sur votre ordinateur :
+
+~~~
+input_geotiff = rasterio.open(input_path)
+input_img = input_geotiff.read()
+~~~
+
+La variable `input_img` contiendra la matrice contenue dans le GeoTIFF.
+Il s'agit d'une matrice 3D, la 1ère dimension correspondant à la couleur, la 2nde aux lignes, le 3ème aux colonnes.
+
+Dans notre cas, chaque GeoTIFF contenant une image pour une "couleur" (c'est-à-dire pour une bande), on peut écrire :
+
+~~~
+input_img = input_geotiff.read()[0]
+~~~
+
+Il est également possible de récupérer la latitude et la longitude des coins de l'image, qui sont contenus dans l'attribut `bounds` :
+
+~~~
+input_bounds = input_geotiff.bounds
+~~~
+
+On peut alors obtenir la latitude minimale `lat_min`, la latitude maximale `lat_max`, la longitude minimale `lon_min` et la longitude maximale `lon_max` avec :
+
+~~~
+lat_min,lat_max,lon_min,lon_max = input_bounds.bottom,input_bounds.top,input_bounds.left,input_bounds.right
+~~~
+
+Une fois les GeoTIFF récupérés, il est possible de les afficher pour voir l'image qu'ils contiennent, avec des axes de latitude et de longitude.
+Pour ce faire, on peut utiliser la bibliothèque `matplot.pyplot`, importée en tant que `plt`, avec la méthode `imshow` :
+
+~~~
+plt.imshow(input_img,extent=[lon_min,lon_max,lat_min,lat_max],origin='upper',cmap='gray')
+plt.xlabel('Longitude (°)')
+plt.ylabel('Latitude (°)')
+~~~
+
+L'image sera affichée en nuances de gris.
+
+Si vous essayez ces commande sur un les GeoTIFF qui vous sont fournis, vous verrez que les contrastes sont mauvais.
+En effet, l'intensité des pixels peut varier énormément au sein d'une même image.
+
+Pour résoudre ce problème, on peut réduire la dynamique de l'image au 2ème et au 98ème poucentiles des intensités des pixels.
+Ceci aura pour effet de saturer les valeurs très faibles et très élevées, améliorant ainsi le contraste.
+
+Voici un exemple sur une image, en utilisant `numpy` importée en tant que `np` :
+
+~~~
+low,high = np.percentile(input_img,(2,98))
+input_img = (input_img-low)/(high-low)
+input_img = np.clip(input_img,0,1)
+~~~
+
+Il est également possible de jouer sur les paramètres `vmin` et `vmax` de la méthode `imshow`, afin de changer les bornes de l'échelle de couleur.
+Mettre des bornes plus grandes que le maximum et le minimum d'intensité des pixels de l'image permet de modifier le contraste de l'affichage.
+
+**Ajoutez à votre script Python l'importation des 4 GeoTIFF**.
+
+Si vous affichez les 4 images qu'ils contiennent, vous devriez obtenir un résultat similaire à celui-ci :
 
 ![Image Sentinel 2 en 4 bandes](img/Sentinel_color_bands.png)
 
+On voit déjà que certaines ressortent plus ou moins dans les différentes bandes : les rivières, les lacs, la ville, les différents types de végétation, etc.
+
+Pour visualiser une image satellite acquise dans différentes bandes de fréquences, on utilise en général une **représentation RGB**.
+On sélectionne 3 bandes, on assigne à chaque bande une couleur, et on superpose les 3 images pour obtenir une seule image en "couleurs".
+
+Pour fusionner 3 matrices `img_red`, `img_green` et `img_blue` correspondant à 3 bandes d'une image que l'on veut afficher en RGB, il suffit de les concaténer avec `numpy` :
+
+~~~
+img_rgb = np.stack((img_red,img_green,img_blue),axis=-1)
+~~~
+
+Par défaut, l'échelle de couleur de la méthode `imshow` sera la bonne.
+
+Le plus classique est d'afficher en rouge la bande du rouge, en vert la bande du vert, et en bleu la bande du bleu.
+C'est ce que l'on appelle une image en **vraies couleurs**, car il se rapproche des couleurs telles que les percevrait notre oeil.
+
+Voici ce que cela donne avec notre image Sentinel 2 :
+
 ![Image RGB en vraies couleurs](img/Sentinel_true_colors.png)
+
+On peut également réaliser un affichage **fausses couleurs**.
+Le plus commun est de mettre en rouge le proche-infrarouge, en vert le rouge, et en bleu le vert.
+
+En effet, ce type d'affichage permet de bien faire ressortir la végétation des étendues d'eau ou des villes.
+
+Voici ce que cet affichage donne sur notre image Sentinel 2 :
 
 ![Image RGB en fausses couleurs](img/Sentinel_false_colors.png)
 
+La végétation ressort nettement en teintes de rouge, alors que les rivières et la ville ressortent en bleu.
+
+|Nota Bene|
+|:-|
+|Il est possible que les images en "vraie couleurs" vous paraissent avoir des couleurs un peu surnaturelles.|
+|C'est normal, les caméras de Sentinel 2 n'aquièrent pas exactement les mêmes longueurs d'onde que les cellules de notre rétine.|
+|Si vous étiez dans l'espace, vous ne vériez donc pas tout à fait les mêmes couleurs avec votre oeil.|
+
+Ces quelques affichages semblent confirmer la pertinence d'utiliser la "couleurs" des pixels de l'image dans ces 4 bandes pour classifier les types de surface au sol.
+
 ## Classification supervisée
+
+### L'apprentissage supervisée
+
+### Base de données labélisée
+
+### Classifieur Naive Bayes
+
+### Mise à l'échelle
 
 ## Entrainement
 
