@@ -146,8 +146,10 @@ Il s'agit d'une matrice 3D, la 1ère dimension correspondant à la couleur, la 2
 Dans notre cas, chaque GeoTIFF contenant une image pour une "couleur" (c'est-à-dire pour une bande), on peut écrire :
 
 ~~~
-input_img = input_geotiff.read()[0]
+input_img = input_geotiff.read(1)
 ~~~
+
+Ainsi, on ne récupère que la 1ère et unique bande.
 
 Il est également possible de récupérer la latitude et la longitude des coins de l'image, qui sont contenus dans l'attribut `bounds` :
 
@@ -236,13 +238,13 @@ Ces quelques affichages semblent confirmer la pertinence d'utiliser la "couleurs
 
 ## Classification supervisée
 
-### L'apprentissage supervisée
+### L'apprentissage supervisé
 
 ### Base de données labélisée
 
-### Classifieur Naive Bayes
+### Préparation des données
 
-### Mise à l'échelle
+### Classifieur Naive Bayes
 
 ## Entrainement
 
