@@ -240,7 +240,39 @@ Ces quelques affichages semblent confirmer la pertinence d'utiliser la "couleurs
 
 ### L'apprentissage supervisé
 
+_Comment "apprendre" à un classifieur à reconnaitre un pixel de forêt, de champs, de ville ou de rivière à partir de sa couleur ?_
+
+Dans ce tutoriel, nous allons utiliser une méthode appelée "**l'apprentissage supervisé**".
+
+En "apprentissage automatique" (ou "Machine-Learning" en anglais), on essaye d'enseigner à un modèle comment renvoyer les sorties attendues à partir d'une sélection d'entrées.
+
+Suivant la nature de la sortie, on parlera de :
+
+* **Régression** si la sortie est quantitative et continue.
+
+* **Classification** si la sortie est quantitative discrète ou qualitative.
+
+Comme ici notre sortie est un "label" (ou "étiquette") que nous voulons attribuer à un pixel à partir des valeurs qu'il contient dans les différentes bandes, nous sommes clairement face à un problème de "**classification**".
+
+L'expression "**supervisée**" vient du fait que pour enseigner à notre modèle comment prédire les labels corrects pour les pixels de l'image, nous allons lui fournir des exemples de pixels **déjà labélisés** pour qu'il puisse s'**entrainer**.
+
+Au cours de l'entrainement, le modèle peut donc comparer ses prédictions aux labels attendus pour cet exemple, d'où le côté "supervisé".
+
+La classification supervisée implique que nous ayons une **connaissance du terrain** dont sont issus nos pixels d'exemple.
+
+Par opposition, ce que l'on appelle "classification non-supervisée" serait ici le fait de séparer les pixels en différents groupes suivant les valeurs qu'ils contiennent dans les différentes bandes, sans a priori sur l'identification des pixels.
+On parle aussi de "clustering" ou "**partitionnement**".
+Nous en reparlerons lors du TP suivant.
+
+![Apprentissage automatique](img/Sentinel_Machine_Learning.png)
+
 ### Base de données labélisée
+
+Pour pouvoir entrainer un modèle à identifier un pixel, il nous faut **une base de données de pixels labélisés**.
+
+Nous allons donc sélectionner des rectangles de pixels dans notre Sentinel 2, pour lesquels nous sommes certains de l'identification.
+
+Voici une fonction toute faite pour la sélection de pixels dans 4 GeoTIFF `blue`, `green`, `red` et `nir`, entre les latitudes `lat_min` et `lat_max`, et les longitudes `lon_min` et `lon_max`
 
 ~~~
 def add_sample(blue,green,red,nir,lon_min,lon_max,lat_min,lat_max,label,dict_dataset={'blue':[],'green':[],'red':[],'nir':[],'label':[]}):
@@ -267,6 +299,26 @@ dict_dataset = add_sample(geotiff_blue,geotiff_green,geotiff_red,geotiff_nir,-68
 ~~~
 
 ### Classifieur Naive Bayes
+
+Une des méthodes de base pour la classification supervisée est la "**décision Bayésienne**" (ou "Naive Bayes" en anglais).
+
+Le principe est le suivant : essayer d'estimer la probabilité conditionnelle d'un pixel d'avoir un label sachant les valeurs qu'il contient.
+Le label ayant **la plus grande probabilité conditionnelle** est attribué à ce pixel.
+
+Comme son nom l'indique, cette méthode va déterminer la probabilité conditionnelle de chaque classe en se basant sur la **formule de Bayes**.
+
+Un **modèle Gaussien** est d'abord ajusté à la distribution des pixels au sein de chaque label dans les données d'entrainement grâce à l'algorithme du "maximum de vraisemblance" (ou "maximum likelihood" en anglais).
+Ce modèle est ensuite utilisé dans la formule de Bayes pour calculer les probabilités conditionnelles de n'importe quel pixel pour chaque classe.
+
+Par exemple, si nous voulons classer des individus en 3 classes $C_1$, $C_2$ et $C_3$ à partir d'une variable $x$ :
+
+![La décision Bayésienne](img/Sentinel_Naive_Bayes.png)
+
+On peut tracer une **frontière de décision** entre les labels en traçant la ligne des valeurs de pixels pour lesquelles les probabilités conditionnelles entre 2 labels sont égales.
+
+Voici une illustration de la méthode pour un exemple simple avec un "raster" à 2 bandes, et 2 labels possibles pour les pixels :
+
+![La décision Bayésienne appliquée à une image](img/Sentinel_Naive_Bayes_raster.gif)
 
 ## Pipeline Scikit-Learn
 
