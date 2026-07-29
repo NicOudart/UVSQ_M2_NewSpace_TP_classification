@@ -272,7 +272,9 @@ Pour pouvoir entrainer un modèle à identifier un pixel, il nous faut **une bas
 
 Nous allons donc sélectionner des rectangles de pixels dans notre Sentinel 2, pour lesquels nous sommes certains de l'identification.
 
-Voici une fonction toute faite pour la sélection de pixels dans 4 GeoTIFF `blue`, `green`, `red` et `nir`, entre les latitudes `lat_min` et `lat_max`, et les longitudes `lon_min` et `lon_max`
+Voici une fonction toute faite pour la sélection de pixels dans 4 GeoTIFF `blue`, `green`, `red` et `nir`, entre les latitudes `lat_min` et `lat_max`, et les longitudes `lon_min` et `lon_max`.
+L'utilisateur peut choisir d'attribuer aux pixels le label qu'il souhaite avec le paramètre `label`.
+L'intensité des pixels sélectionnés dans les différentes bandes et le label assigné seront ajoutés à un dictionnaire, renvoyé en sortie de la fonction :
 
 ~~~
 def add_sample(blue,green,red,nir,lon_min,lon_max,lat_min,lat_max,label,dict_dataset={'blue':[],'green':[],'red':[],'nir':[],'label':[]}):
@@ -294,8 +296,40 @@ def add_sample(blue,green,red,nir,lon_min,lon_max,lat_min,lat_max,label,dict_dat
     return dict_dataset
 ~~~
 
+Voici par exemple une commande pour ajouter un rectangle de pixels correspondant à de la forêt, à un dictionnaire nouvellement créé :
+
 ~~~
 dict_dataset = add_sample(geotiff_blue,geotiff_green,geotiff_red,geotiff_nir,-68.985,-68.965,-12.595,-12.585,'forest')
+~~~
+
+Pour ajouter des pixels correspondant à de la ville à ce même dictionnaire, on peut utiliser une commande similaire à celle-ci :
+
+~~~
+dict_dataset = add_sample(geotiff_blue,geotiff_green,geotiff_red,geotiff_nir,-69.196,-69.182,-12.602,-12.590,'city',dict_dataset)
+~~~
+
+**Ajoutez cette fonction à votre script, et créez un dictionnaire contenant des sélection de pixels pour la forêt, les champs, la ville et l'eau.**
+
+Pour faire ceci, vous pouvez vous servir de votre affichage RGB géolocalisé de l'image Sentinel 2, ou d'un service de cartographie en ligne pour vérifier la nature des sols.
+
+Voici l'exemple de sélection qui a été utilisé pour obtenir les résultats montrés dans ce tutoriel :
+
+![Base de données d'apprentissage](img/Sentinel_training_dataset.png)
+
+Un fois le dictionnaire obtenu, il pourra être transformé en DataFrame `pandas` :
+
+~~~
+df_dataset = pd.DataFrame(dict_dataset)
+~~~
+
+Les DataFrames sont en effet couramment utilisés sous Python pour fournir des données à des méthodes de Machine-Learning.
+Les colonnes correspondent en général aux variables d'entrée (ici les intensités des pixels dans les 4 bandes de l'image), et aux labels (ici l'identification du sol).
+Les lignes correspondent aux différents individus de la base de données (ici les pixels).
+
+Il ne faudra pas oublier d'importer `pandas` en début de script :
+
+~~~
+import pandas as pd
 ~~~
 
 ### Classifieur Naive Bayes
@@ -316,15 +350,25 @@ Par exemple, si nous voulons classer des individus en 3 classes $C_1$, $C_2$ et 
 
 On peut tracer une **frontière de décision** entre les labels en traçant la ligne des valeurs de pixels pour lesquelles les probabilités conditionnelles entre 2 labels sont égales.
 
-Voici une illustration de la méthode pour un exemple simple avec un "raster" à 2 bandes, et 2 labels possibles pour les pixels :
+Voici une illustration de la méthode pour un exemple simple avec une image satellite acquise dans 2 bandes, et 2 labels possibles pour les pixels :
 
 ![La décision Bayésienne appliquée à une image](img/Sentinel_Naive_Bayes_raster.gif)
 
-## Pipeline Scikit-Learn
+### Pipeline Scikit-Learn
+
+
 
 ## Entrainement
 
+### Ajustement du modèle
+
+### Performances en entrainement
+
 ## Test
+
+### La problématique du sur-apprentissage
+
+### Performances en test
 
 ## Généralisation
 
