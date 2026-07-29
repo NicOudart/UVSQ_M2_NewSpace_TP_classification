@@ -242,9 +242,33 @@ Ces quelques affichages semblent confirmer la pertinence d'utiliser la "couleurs
 
 ### Base de données labélisée
 
-### Préparation des données
+~~~
+def add_sample(blue,green,red,nir,lon_min,lon_max,lat_min,lat_max,label,dict_dataset={'blue':[],'green':[],'red':[],'nir':[],'label':[]}):
+    
+    window = rasterio.windows.from_bounds(left=lon_min,bottom=lat_min,right=lon_max,top=lat_max,transform=geotiff_blue.transform)
+    
+    sample_blue = geotiff_blue.read(1,window=window)
+    sample_green = geotiff_green.read(1,window=window)
+    sample_red = geotiff_red.read(1,window=window)
+    sample_nir = geotiff_nir.read(1,window=window)
+    
+    dict_dataset['blue'] += list(sample_blue.ravel())
+    dict_dataset['green'] += list(sample_green.ravel())
+    dict_dataset['red'] += list(sample_red.ravel())
+    dict_dataset['nir'] += list(sample_nir.ravel())
+    
+    dict_dataset['label'] += [label]*sample_blue.size
+    
+    return dict_dataset
+~~~
+
+~~~
+dict_dataset = add_sample(geotiff_blue,geotiff_green,geotiff_red,geotiff_nir,-68.985,-68.965,-12.595,-12.585,'forest')
+~~~
 
 ### Classifieur Naive Bayes
+
+## Pipeline Scikit-Learn
 
 ## Entrainement
 
