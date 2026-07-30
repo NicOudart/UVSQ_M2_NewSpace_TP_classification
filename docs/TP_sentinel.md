@@ -474,14 +474,38 @@ ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=set_labels).plot()
 
 Voici un exemple de matrice de confusion obtenue avec la sélection de pixels d'entrainement montrée précédemment :
 
-![Exemple de matrice de confusion](img/.png)
+![Exemple de matrice de confusion](img/Sentinel_confusion_matrix_training_dataset.png)
 
+On voit ici nettement que la forêt et l'eau sont très bien identifiés par notre classifieur.
+En revanche, il a visiblement du mal à distinguer les champs de la ville.
 
+Pour notre application, où nous désirons différencier la forêt des zones déboisées, ce n'est pas un problème majeur.
 
 La matrice de confusion permet de déterminer quelles classes sont plus difficiles à prédire que d'autres, et avec quelles classes elles sont confondues par le modèle.
 Mais elle est moins pratique pour comparer rapidement 2 modèles, ou un même modèle sur 2 bases de données labélisées.
 
 On lui préfèrera donc **un score entre 0 et 1**, déterminé à partir de la matrice de confusion.
+
+Le score le plus commun est l'**exactitude** (ou "accuracy" en anglais) : 
+
+$\frac{TP+TN}{TP+FP+TN+FN}$
+
+Il correspond au ratio entre le nombre de prédictions correctes, et le nombre total de prédiction.
+
+Pour déterminer ce score avec notre classifieur sur les données d'entrainement, il suffit d'utiliser la méthode `score` :
+
+~~~
+accuracy = classifier_pipeline.score(features,labels)
+~~~
+
+**Ajoutez à votre script Python l'affichage de la matrice de confusion du classifieur sur les données d'entrainement, puis le calcul de son exactitude.**
+
+Si on calcule l'exactitude du classifieur sur les pixels d'entrainement sélectionnés dans notre exemple, on trouve environ 0.9, soit 90% de pixels identifiés correctement.
+
+|Nota Bene|
+|:-|
+|Ce critère fonctionne bien si la base de donnée est équilibrée (c'est-à-dire avec un nombre d'individus similaires pour chaque label).|
+|Si ce n'est pas le cas, on lui préfèrera le F1-score, aussi très commun pour évaluer un classifieur.|
 
 ## Test
 
