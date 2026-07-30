@@ -732,4 +732,6 @@ La leçon à en tirer : **il faut toujours réfléchir à la pertinence des clas
 
 **C'était le dernier TP de ce cours !**
 
+Cet exemple était un prétexte pour vous faire découvrir les notions essentielles de partitionnement, et les appliquer à un exemple issu de l'astrophysique.
+
 N'hésitez pas à reprendre les différents tutoriels chez vous.

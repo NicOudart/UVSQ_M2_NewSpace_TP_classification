@@ -334,6 +334,33 @@ import pandas as pd
 
 C'est bon, nous avons notre **base données d'entrainement** !
 
+Un bon réflexe est d'afficher les **histogrammes** des différentes classes pour chacune des variables.
+Ainsi, on peut vérifier si les différentes classes sont bien séparables grâce aux bandes choisies, et si le choix d'un modèle Gaussien a un sens.
+
+Pour afficher des histogrammes à partir d'un DataFrame, on peut utiliser la bibliothèque `seaborn`, qui propose de nombreux affichages utiles en analyse de données.
+
+N'oubliez donc pas de l'importer en début de script :
+
+~~~
+import seaborn as sns
+~~~
+
+Vous pouvez ainsi utiliser la méthode `histplot` pour afficher un histogramme pour la bande bleue, avec une couleur différente par label :
+
+~~~
+sns.histplot(data=df_dataset,x='blue',hue='label')
+~~~
+
+Pour notre exemple de sélection de pixels, nous obtenons les histogrammes suivants :
+
+![Histogrammes de la base de données d'entrainement](img/Sentinel_training_dataset_statistics.png)
+
+**Ajoutez un affichage similaire à votre script Python.**
+
+_En regardant les histogrammes obtenus, pensez-vous que les 4 bandes retenues permettent de séparer nos 4 classes ?_
+
+_Et pensez-vous que l'hypothèse Gaussienne est pertinente pour toutes les classes ?_
+
 ### Classifieur Naive Bayes
 
 Il nous faut à présent choisir un type de modèle à entrainer.
@@ -559,10 +586,80 @@ Si le classifieur performe aussi bien en test qu'en entrainement, on en déduira
 
 ### Performances en test
 
+**Ajoutez les étapes suivantes à votre script Python :**
+
+* Sélectionnez des nouveaux pixels que vous labéliserez, afin de constituer une base de données de test.
+**Ces pixels devront être différents de ceux utilisés pour l'entrainement du classifieur !**
+
+* Déterminez la matrice de confusion du classifieur sur ces nouvelles données.
+
+* Déterminez l'exactitude du classifieur sur ces nouvelles données.
+
+_Que concluez-vous des résultats obtenus ?_
+
+_Est-ce que l'on s'attend à de bonnes performances en généralisation ?_
+
+_Quelles classes seront probablement moins bien prédites que les autres ?_
+
+Si vous repérez un problème de sur-apprentissage, vous pouvez essayer de jouer sur les données d'entrainement, afin qu'elles soient plus représentatives de nos 4 classes.
+
 ## Généralisation
 
 ### Application à l'image entière
 
+Maintenant que nous avons une bonne idée des performances de notre classifieur en **généralisation**, nous pouvons essayer de l'appliquer à notre image entière.
+
+Tout d'abord, il faut convertir l'image en un DataFrame au même format que celui utilisé pour entrainer le classifieur :
+
+~~~
+df_image = pd.DataFrame({'blue':geotiff_blue.read(1).ravel(),'green':geotiff_green.read(1).ravel(),'red':geotiff_red.read(1).ravel(),'nir':geotiff_nir.read(1).ravel()})
+~~~
+
+Ensuite, on applique notre Pipeline à ce DataFrame, afin d'obtenir les prédictions du classifieur :
+
+~~~
+prediction_image = classifier_pipeline.predict(df_image)
+~~~
+
+Pour remettre la sortie du Pipeline au format de l'image d'origine, on peut utiliser la méthode `reshape` :
+
+~~~
+height,width = geotiff_blue.read(1).shape
+prediction_image = prediction_image.reshape(height,width)
+~~~
+
+Si vous regardez le contenu de la matrice `prediction_image` obtenue, vous verrez qu'elle contient des chaînes de caractères : les noms des labels.
+Hors, pour afficher cette matrice sous la forme d'une image géoréférencée, il nous faudrait plutôt des nombres entiers.
+
+On peut facilement réaliser cette conversion avec la méthode `vectorize` de `numpy` :
+
+~~~
+label_to_int = {"forest":0,"field":1,"city":2,"water":3}
+prediction_image = np.vectorize(label_to_int.get)(prediction_image)
+~~~
+
+La matrice obtenue pourra être affichée avec la méthode `imshow` de `matplotlib`.
+
+**Ajoutez l'application du classifieur à l'image entière, puis affichez la prédiction obtenue sous la forme d'une image géoréférencée.**
+
+Avec le classifieur de notre exemple, nous obtenons les prédictions suivantes :
+
+![Classification de l'image entière](img/Sentinel_image_classification.png)
+
+_Le résultat obtenu vous parait-il cohérent avec l'image satellite ?_
+
+_De quelles classes ont l'air de provenir les erreurs ? Etait-ce attendu d'après notre test ?_
+
+_Peut-on avoir confiance en notre classifieur pour identifier la forêt du reste ?_
+
 ### Evaluation de la surface de forêt
 
+L'étape ultime de notre étude est d'évaluer la surface de forêt capturée par notre image Sentinel 2.
+
+
+
 ---
+
+Cet exemple était un prétexte pour vous faire découvrir les notions essentielles de classification supervisée, et les appliquer à un exemple issu de la télédétection satellitaire.
+
+Lors du TP suivant, nous allons nous pencher sur une autre branche du Machine-Learning : le partitionnement.
