@@ -332,7 +332,11 @@ Il ne faudra pas oublier d'importer `pandas` en début de script :
 import pandas as pd
 ~~~
 
+C'est bon, nous avons notre **base données d'entrainement** !
+
 ### Classifieur Naive Bayes
+
+Il nous faut à présent choisir un type de modèle à entrainer.
 
 Une des méthodes de base pour la classification supervisée est la "**décision Bayésienne**" (ou "Naive Bayes" en anglais).
 
@@ -354,13 +358,52 @@ Voici une illustration de la méthode pour un exemple simple avec une image sate
 
 ![La décision Bayésienne appliquée à une image](img/Sentinel_Naive_Bayes_raster.gif)
 
+Il existe une implémentation de cette méthode dans la bibliothèque Python `scikit-learn`, que nous allons utiliser lors de ce tutoriel.
+
+Si cette méthode est beaucoup plus basique que les réseaux de neurones actuels, elle est aussi beaucoup plus rapide à entrainer, et peut donner des résultats très satisfaisants selon les applications.
+
+|Nota Bene|
+|:-|
+|Il est possible d'utiliser d'autres fonctions qu'une Gaussienne pour modéliser les différentes classes.|
+|Mais par défaut, on sous-entend souvent que la "décision Bayésienne" est à modèle Gaussien.|
+
 ### Pipeline Scikit-Learn
 
+Les outils de **Machine-Learning** que nous utiliserons lors de ce tutoriel sont tous contenus dans la bibliothèque `scikit-learn`.
 
+Pour commencer, cette bibliothèque permet de définir un type d'objet que l'on appelle un "**Pipeline**".
+Il permet de créer une petite chaîne pouvant contenir des pré-traitements des données d'entrée, un classifieur, et des post-traitement des labels de sortie.
+
+Pour notre application, nous allons définir un Pipeline contenant une **mise à l'échelle** puis un classifieur "**Naive Bayes**".
+
+En effet, il est recommandé de mettre à l'échelle les différentes variables d'entrée d'un classifieur, pour éviter de biaiser son entrainement : il risquerait de donner plus de poids à une variable simplement parce qu'elle a des valeurs numériques plus grandes.
+
+Pour éviter ce problème, nous choisissons la fonction "**centrage-réduction**" ("standard scaler" en anglais), qui consiste juste en un retrait de la moyenne et une division par l'écart-type de chaque variable.
+La moyenne des variables devient alors 0, et leur écart-type 1.
+
+En début de script Python, il faudra importer l'objet "Pipeline" de `scikit-learn`, le centrage-réduction, et la méthode de la décision bayesienne :
+
+~~~
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.naive_bayes import GaussianNB
+~~~
+
+Pour définir une Pipeline `classifier_pipeline` avec une mise à l'échelle nommée `scaler`, et un classifieur nommé `gnb`, on pourra utiliser la commande :
+
+~~~
+classifier_pipeline = Pipeline([('scaler',StandardScaler()),('gnb',GaussianNB())])
+~~~
+
+**Ajoutez la définition de ce Pipeline à votre script Python.**
+
+Il nous faut maintenant entrainer ce Pipeline sur notre base de données.
 
 ## Entrainement
 
 ### Ajustement du modèle
+
+
 
 ### Performances en entrainement
 
@@ -368,8 +411,55 @@ Voici une illustration de la méthode pour un exemple simple avec une image sate
 
 ### La problématique du sur-apprentissage
 
+En Machine-Learning, le nerf de la guerre est la **généralisation**.
+
+En effet, un modèle qui a d'excellente performances sur les données d'entrainement, mais de mauvaises performances sur n'importe quelles autres données **ne sert à rien**.
+On veut que le modèle soit capable de **généraliser** ce qu'il a apprit.
+
+Ceci peut arriver lorsqu'un modèle apprend **trop spécifiquement** des données d'entrainement.
+C'est ce que l'on appelle le **sur-apprentissage**, et c'est la hantise de tous les "data-scientists".
+
+Voici une illustration sur un problème de régression :
+
+![Le surapprentissage](img/Sentinel_overfitting.png)
+
+Le modèle de gauche est visiblement trop simpliste pour capturer la tendance principale des données : on parle de **sous-apprentissage**.
+
+Le modèle de droite est visiblement trop complexe, et capture même le bruit dans les données d'entrainement.
+Il aura donc d'excellentes performances sur les données d'entrainement, mais aura du mal à généraliser : il y a **sur-apprentissage**.
+
+Le modèle **idéal** est au milieu : assez complexe pour capturer la tendance principale des données d'entrainement, sans aller jusqu'à apprendre le bruit dans les données.
+
+Le **sur-apprentissage** peut avoir différentes origines :
+
+* Trop peu de données d'entrainement.
+
+* Des données d'entrainement pas assez représentatives.
+
+* Des données de mauvaise qualité (mauvais labels, déséquilibre entre labels, etc.).
+
+* Un type de modèle trop complexe.
+
+* Trop peu de d'entrées au modèle.
+
+Dans le contexte de notre tutoriel, en cas de de sur-apprentissage, nous pourrions essayer :
+
+* D'ajouter des pixels à vos données d'entrainement.
+
+* De re-faire votre base de données d'entrainement avec des zones plus représentatives.
+
+* Ajouter des bandes pertinentes à vos données d'entrainement.
+
+Mais reste alors une question : _Comment détecter un sur-apprentissage ?_
+
+Nous allons évaluer les performances du modèle
+
 ### Performances en test
 
 ## Généralisation
+
+### Application à l'image entière
+
+### Evaluation de la surface de forêt
 
 ---
