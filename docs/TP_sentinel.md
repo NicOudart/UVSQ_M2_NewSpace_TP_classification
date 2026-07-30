@@ -403,9 +403,85 @@ Il nous faut maintenant entrainer ce Pipeline sur notre base de données.
 
 ### Ajustement du modèle
 
+Il est très simple d'entrainer un Pipeline `scikit-learn` : il suffit d'utiliser la méthode `fit`, avec en paramètres les variables d'entrée et les labels de la base de données d'entrainement.
+En Machine-Learning, les variables d'entrée d'un classifieur sont appelées "**features**", et les sorties sont appelées "**labels**".
 
+Dans un premier temps, il faut sélectionner les "features" et les "labels" de notre base de données d'entrainement :
+
+~~~
+features = df_dataset.drop(columns=['label'])
+labels = df_dataset['label']
+~~~
+
+Ensuite, on appelle `fit` avec en paramètres les "features" et les "labels" :
+
+~~~
+classifier_pipeline.fit(features,labels)
+~~~
+
+**Ajoutez à votre script Python l'entrainement de votre Pipeline.***
+
+Et voilà, nous avons un Pipeline entrainé à classifier les pixels de notre image !
+Reste à vérifier avec quelle performance.
 
 ### Performances en entrainement
+
+Pour évaluer les performances d'un classifieur, il faut vérifier s'il est bien capable de **prédire des labels connus**.
+
+La méthode `predict` d'un Pipeline permet de réaliser une prédiction à partir de "features" donnés :
+
+~~~
+prediction = classifier_pipeline.predict(features)
+~~~
+
+On peut donc appliquer la méthode `predict` aux features de notre base de données d'entrainement, afin de vérifier que l'on obtient bien les labels attendus.
+
+Pour une prédiction d'un label donné, il existe **4 situations** :
+
+* **TP** : les vrais positifs, ce label a été prédit et c'était le bon label.
+
+* **TN** : le vrais négatifs, ce label n'a pas été prédit et ce n'était pas le bon label.
+
+* **FP** : les faux positifs, ce label a été prédit mais ce n'était pas le bon label.
+
+* **FN** : les faux négatifs, ce label n'a pas été prédit mais c'était le bon label.
+
+Pour toutes les prédictions effectuée sur une base de données labélisée, on met en général les résultats sous la forme d'une "**matrice de confusion**".
+
+Les colonnes correspondent aux labels prédits, les lignes aux labels corrects, et chaque case contient le nombre d'occurences.
+
+![Matrice de confusion](img/Sentinel_confusion_matrix.png)
+
+De manière générale, la diagonale correspond aux **prédictions correctes**, et le reste de la matrice aux **prédictions incorrectes**.
+
+On peut aussi déterminer le nombre de TP, TN, FP et FN du point de vue d'un label donné.
+
+Il existe une implémentation de la matrice de confusion dans `scikit-learn`, que l'on peut importer avec :
+
+~~~
+from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
+~~~
+
+L'objet `confusion_matrix` permet de créer une matrice de confusion à partir de labels connus et de labels prédits, la méthode `ConfusionMatrixDisplay` permet ensuite d'afficher cette matrice sous la forme d'une figure.
+
+Voici comment utiliser cette méthode avec notre Pipeline, sur notre base de données d'entrainement :
+
+~~~
+set_labels = sorted(set(labels))
+cm = confusion_matrix(labels,classifier_pipeline.predict(features),labels=set_labels)
+ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=set_labels).plot()
+~~~
+
+Voici un exemple de matrice de confusion obtenue avec la sélection de pixels d'entrainement montrée précédemment :
+
+![Exemple de matrice de confusion](img/.png)
+
+
+
+La matrice de confusion permet de déterminer quelles classes sont plus difficiles à prédire que d'autres, et avec quelles classes elles sont confondues par le modèle.
+Mais elle est moins pratique pour comparer rapidement 2 modèles, ou un même modèle sur 2 bases de données labélisées.
+
+On lui préfèrera donc **un score entre 0 et 1**, déterminé à partir de la matrice de confusion.
 
 ## Test
 
@@ -452,7 +528,10 @@ Dans le contexte de notre tutoriel, en cas de de sur-apprentissage, nous pourrio
 
 Mais reste alors une question : _Comment détecter un sur-apprentissage ?_
 
-Nous allons évaluer les performances du modèle
+Nous allons évaluer les performances du modèle sur une nouvelle sélection de données, jamais vue par le modèle pendant l'entrainement.
+Ce que l'on appelle une **base de données de test**.
+
+Si le classifieur performe aussi bien en test qu'en entrainement, on en déduira que l'**on peut s'attendre à de bonnes performances en généralisation**.
 
 ### Performances en test
 
