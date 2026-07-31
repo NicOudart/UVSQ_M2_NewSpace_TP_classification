@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Nicolas OUDART" /><link rel="canonical" href="https://nicoudart.github.io/UVSQ_M2_NewSpace_TP_classification/TP_sentinel/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>TP Sentinel - UVSQ_M2_NewSpace_TP_classification</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "TP Sentinel";
+        var mkdocs_page_input_path = "TP_sentinel.md";
+        var mkdocs_page_url = "/UVSQ_M2_NewSpace_TP_classification/TP_sentinel/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> UVSQ_M2_NewSpace_TP_classification
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Accueil</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">TP Sentinel</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#contexte-scientifique">Contexte scientifique</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#puerto-maldonado-et-deforestation">Puerto Maldonado et déforestation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sentinel-2-et-chlorophylle">Sentinel 2 et chlorophylle</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cartographie">Cartographie</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#objectifs">Objectifs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#importation-des-donnees">Importation des données</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#les-images-geotiff">Les images GeoTIFF</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#importation-avec-rasterio">Importation avec Rasterio</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#classification-supervisee">Classification supervisée</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#lapprentissage-supervise">L'apprentissage supervisé</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#base-de-donnees-labelisee">Base de données labélisée</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#classifieur-naive-bayes">Classifieur Naive Bayes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pipeline-scikit-learn">Pipeline Scikit-Learn</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#entrainement">Entrainement</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#ajustement-du-modele">Ajustement du modèle</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#performances-en-entrainement">Performances en entrainement</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#test">Test</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#la-problematique-du-sur-apprentissage">La problématique du sur-apprentissage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#performances-en-test">Performances en test</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#generalisation">Généralisation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#application-a-limage-entiere">Application à l'image entière</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#evaluation-de-la-surface-de-foret">Evaluation de la surface de forêt</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../TP_exoplanets/">TP Exoplanètes</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">UVSQ_M2_NewSpace_TP_classification</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">TP Sentinel</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cartographier-puerto-maldonado-avec-sentinel">Cartographier Puerto Maldonado avec Sentinel</h1>
+<p><img alt="En-tête TP Sentinel" src="../img/Header_TP_sentinel.png" /></p>
+<p><em>"Le seizième siècle. Des quatre coins de l'Europe, de gigantesques voiliers partent à la conquête du Nouveau Monde. À bord de ces navires, des hommes avides de rêve, d'aventure et d'espace, à la recherche de fortune. Qui n'a jamais rêvé de ces mondes souterrains, de ces mers lointaines peuplées de légendes, ou d'une richesse soudaine qui se conquerrait au détour d'un chemin de la Cordillère des Andes ? Qui n'a jamais souhaité voir le Soleil souverain guider ses pas au coeur du pays Inca, vers la richesse et l'histoire des Mystérieuses Cités d'Or ?"</em></p>
+<p><strong>Jean Chalopin, Les Mystérieuses Cités d'Or (1982)</strong></p>
+<hr />
+<h2 id="contexte-scientifique">Contexte scientifique</h2>
+<h3 id="puerto-maldonado-et-deforestation">Puerto Maldonado et déforestation</h3>
+<p><strong>Puerto Maldonado</strong> est la capitale de la région de Madre de Dios au Pérou.</p>
+<p>En plein coeur de l'Amazonie péruvienne, la ville est à la confluence des rivières Madre de Dios et Tambopata, affluents de l'Amazone.
+Le lieu a attiré tour à tour les conquistadors à la recherche de la cité perdue de Païtiti, les exploitants de caoutchouc, les orpailleurs illégaux, les cultivateurs de noix du Brésil, et aujourd'hui les "éco-touristes". </p>
+<p>La forêt primaire a donc été exploitée depuis des siècles, ce qui implique <strong>déforestation</strong>, <strong>bétonisation</strong> et <strong>plantation d'espèces importées</strong>.
+Néanmoins, la création en 2000 de la réserve nationale de Tambopata, au sud-est de Puerto Maldonado, a permis de <strong>préserver une partie de la forêt primaire</strong>, qui constitue un des biotopes les plus riches du monde.</p>
+<p>Voici une image de la région, prise par le satellite Sentinel 2 :</p>
+<p><img alt="Vue satellite de Puerto Maldonado" src="../img/Sentinel_Puerto_Maldonado.png" /></p>
+<p>On observe nettement les 2 rivières, la zone urbaine de Puerto Maldonado, les exploitations agricoles, et ce qui reste de la forêt primaire.</p>
+<p>Puerto Maldonado est donc un exemple parfait pour étudier <strong>la déforestation en Amazonie</strong>.</p>
+<h3 id="sentinel-2-et-chlorophylle">Sentinel 2 et chlorophylle</h3>
+<p><strong>Sentinel 2</strong> est une série de satellites d'observation de la Terre faisant partie du programme Copernicus de l'ESA.</p>
+<p>Ces satellites ont pour mission de capturer des images optiques de la surface de la Terre, <strong>dans différentes bandes de longueur d'onde</strong>, avec une résolution allant jusqu'à 10 m au sol.</p>
+<p>Les images de Sentinel 2 peuvent être récupérées via le site de Copernicus : <a href="https://browser.dataspace.copernicus.eu">copernicus browser</a>.</p>
+<p>Voici les différentes bandes dans lesquelles les satellites Sentinel 2 sont capables d'acquérir des images :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Bande</th>
+<th style="text-align: center;">Cible</th>
+<th style="text-align: center;">Longueur d'onde</th>
+<th style="text-align: center;">Résolution au sol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">B01</td>
+<td style="text-align: center;">Aérosols</td>
+<td style="text-align: center;">443 nm</td>
+<td style="text-align: center;">60 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B02</td>
+<td style="text-align: center;">Bleu</td>
+<td style="text-align: center;">490 nm</td>
+<td style="text-align: center;">10 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B03</td>
+<td style="text-align: center;">Vert</td>
+<td style="text-align: center;">560 nm</td>
+<td style="text-align: center;">10 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B04</td>
+<td style="text-align: center;">Rouge</td>
+<td style="text-align: center;">665 nm</td>
+<td style="text-align: center;">10 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B05</td>
+<td style="text-align: center;">Red-edge</td>
+<td style="text-align: center;">705 nm</td>
+<td style="text-align: center;">20 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B06</td>
+<td style="text-align: center;">Red-edge</td>
+<td style="text-align: center;">740 nm</td>
+<td style="text-align: center;">20 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B07</td>
+<td style="text-align: center;">Red-edge</td>
+<td style="text-align: center;">783 nm</td>
+<td style="text-align: center;">20 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B08</td>
+<td style="text-align: center;">Proche infrarouge</td>
+<td style="text-align: center;">842 nm</td>
+<td style="text-align: center;">10 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B08A</td>
+<td style="text-align: center;">Proche infrarouge étroit</td>
+<td style="text-align: center;">865 nm</td>
+<td style="text-align: center;">20 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">B09</td>
+<td style="text-align: center;">Vapeur d'eau</td>
+<td style="text-align: center;">945 nm</td>
+<td style="text-align: center;">60 m</td>
+</tr>
+</tbody>
+</table>
+<p>Deux de ces bandes sont particulièrement utiles pour étuder la <strong>végétation</strong> : B04 et B08.</p>
+<p>En effet, la chlorophylle contenue dans le feuillage des plantes <strong>absorbe fortement le rouge</strong>, et <strong>réfléchit fortement le proche-infrarouge</strong>.</p>
+<p>Cette propriété est essentielle pour les plantes :
+D'une part la photosynthèse nécessite de la lumière dans le rouge.
+Et d'autre part le proche-infrarouge chaufferait inutilement les feuilles, les obligeant à transpirer abondement.</p>
+<p>Il est donc très courant en télédétection d'utiliser les bandes rouge et proche-infrarouge pour cartographier la végétation d'une région.
+Il existe même un score calculé à partir de ces 2 bandes pour indiquer la présence de végétation : le <strong>NDVI</strong>.</p>
+<h3 id="cartographie">Cartographie</h3>
+<p>Nous allons essayer de cartographier la région de Puerto Maldonado à partir d'une image satellite de Sentinel 2, acquise dans 4 bandes : B02 (bleu), B03 (vert), B04 (rouge) et B08 (proche-infrarouge).</p>
+<p>L'idée sera pour chaque pixel de l'image d'identifier automatiquement à quel type de surface il correspond, à partir de sa couleur (c'est-à-dire la réflectivité perçue dans les différentes bandes).</p>
+<p>Nous nous concentrerons sur les 4 types de surface suivants : "eau", "ville", "champs" et "forêt".</p>
+<p><em>Mais comment entrainer un modèle à identifier le type de pixel associé à chaque pixel à partir de sa couleur ?</em></p>
+<p>On reconnait dans cette question un problème de <strong>classification supervisée</strong>.</p>
+<h2 id="objectifs">Objectifs</h2>
+<p>Lors de ce tutoriel, nous allons programmer une <strong>chaîne de classification supervisée</strong> sous la forme d'un <strong>script Python</strong>, que nous utiliserons pour <strong>cartographier la région de Puerto Maldonado</strong>.</p>
+<p>Ce script Python devra :</p>
+<ul>
+<li>
+<p>Importer les données d'images GeoTIFF sous Python avec la bibliothèque <code>rasterio</code>.</p>
+</li>
+<li>
+<p>Sélectionner des pixels labélisés pour générer une base de données d'entrainement et une base de données de test.</p>
+</li>
+<li>
+<p>Appliquer une transformation de mise à l'échelle aux données.</p>
+</li>
+<li>
+<p>Entrainer un classifieur "Naive Bayes" à identifier les pixels de l'image à partir de leur couleur.</p>
+</li>
+<li>
+<p>Tester les performances en généralisation de ce classifieur.</p>
+</li>
+<li>
+<p>Classifier les pixels de toute l'image.</p>
+</li>
+</ul>
+<p>Votre script se basera sur la bibliothèque Python <code>Scikit-Learn</code>, qui propose de nombreuses méthodes de Machine-Learning.
+Nous utiliserons également la bibliothèque <code>rasterio</code> pour l'importer de GeoTIFF, la bibliothèque <code>pandas</code> pour la manipulation des données, et la bibliothèque <code>seaborn</code> pour les affichages graphiques.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Nota Bene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Il est à noter que le problème que nous cherchons à résoudre ici est en réalité déjà résolu : il existe déjà de nombreux classifieurs d'images Sentinel 2.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Aussi, il est à noter que l'approche "par pixel" a ses limites : un classifieur moderne considèrerait les pixels dans leur contexte.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="importation-des-donnees">Importation des données</h2>
+<h3 id="les-images-geotiff">Les images GeoTIFF</h3>
+<p>Le <strong>TIFF</strong> ("Tagged Image File Format") est un format d'image stockée de manière matricielle ("raster" en anglais).
+Comme son nom l'indique, ce format permet d'enregistrer des <strong>métadonnées</strong> en plus de l'image ("tag" en anglais).</p>
+<p>Le <strong>GeoTIFF</strong> utilise cette capacité du format TIFF pour ajouter des données de <strong>géoréférencement</strong> à des images.
+Ceci en fait le format idéal pour enregistrer des <strong>images satellites</strong> associées à des coordonnées de latitude et de longitude.</p>
+<p>Voici 4 fichiers GeoTIFF correspondant à la même image Sentinel 2 de la région de Puerto Maldonado, prise dans 4 bandes différentes le 30/08/2025 :</p>
+<ul>
+<li>
+<p>B02 (bleu) : <a href="https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B02_(Raw).tiff">cliquez ici</a>.</p>
+</li>
+<li>
+<p>B03 (vert) : <a href="https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B03_(Raw).tiff">cliquez ici</a>.</p>
+</li>
+<li>
+<p>B04 (rouge) : <a href="https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B04_(Raw).tiff">cliquez ici</a>.</p>
+</li>
+<li>
+<p>B08 (proche-infrarouge) : <a href="https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B08_(Raw).tiff">cliquez ici</a>.</p>
+</li>
+</ul>
+<p>Ce format est lisible par certains logiciels de traitement d'image, et par des outils de géographes tels que QGIS.</p>
+<p>Pour importer ses images sous Python, nous utiliserons la bibliothèque <code>rasterio</code>.</p>
+<h3 id="importation-avec-rasterio">Importation avec Rasterio</h3>
+<p><code>Rasterio</code> est une bibliothèque Python faite pour la l'importation et l'exportation de fichiers GeoTIFF sous Python.</p>
+<p>Il ne faudra pas oublier de l'importer en début de script :</p>
+<pre><code>import rasterio
+</code></pre>
+<p>Pour importer chacun de nos GeoTIFF, il faudra utiliser la méthode <code>open</code>, puis la méthode <code>read</code>.
+Par exemple, pour un GeoTIFF situé à un chemin <code>input_path</code> sur votre ordinateur :</p>
+<pre><code>input_geotiff = rasterio.open(input_path)
+input_img = input_geotiff.read()
+</code></pre>
+<p>La variable <code>input_img</code> contiendra la matrice contenue dans le GeoTIFF.
+Il s'agit d'une matrice 3D, la 1ère dimension correspondant à la couleur, la 2nde aux lignes, le 3ème aux colonnes.</p>
+<p>Dans notre cas, chaque GeoTIFF contenant une image pour une "couleur" (c'est-à-dire pour une bande), on peut écrire :</p>
+<pre><code>input_img = input_geotiff.read(1)
+</code></pre>
+<p>Ainsi, on ne récupère que la 1ère et unique bande.</p>
+<p>Il est également possible de récupérer la latitude et la longitude des coins de l'image, qui sont contenus dans l'attribut <code>bounds</code> :</p>
+<pre><code>input_bounds = input_geotiff.bounds
+</code></pre>
+<p>On peut alors obtenir la latitude minimale <code>lat_min</code>, la latitude maximale <code>lat_max</code>, la longitude minimale <code>lon_min</code> et la longitude maximale <code>lon_max</code> avec :</p>
+<pre><code>lat_min,lat_max,lon_min,lon_max = input_bounds.bottom,input_bounds.top,input_bounds.left,input_bounds.right
+</code></pre>
+<p>Une fois les GeoTIFF récupérés, il est possible de les afficher pour voir l'image qu'ils contiennent, avec des axes de latitude et de longitude.
+Pour ce faire, on peut utiliser la bibliothèque <code>matplot.pyplot</code>, importée en tant que <code>plt</code>, avec la méthode <code>imshow</code> :</p>
+<pre><code>plt.imshow(input_img,extent=[lon_min,lon_max,lat_min,lat_max],origin='upper',cmap='gray')
+plt.xlabel('Longitude (°)')
+plt.ylabel('Latitude (°)')
+</code></pre>
+<p>L'image sera affichée en nuances de gris.</p>
+<p>Si vous essayez ces commande sur un les GeoTIFF qui vous sont fournis, vous verrez que les contrastes sont mauvais.
+En effet, l'intensité des pixels peut varier énormément au sein d'une même image.</p>
+<p>Pour résoudre ce problème, on peut réduire la dynamique de l'image au 2ème et au 98ème poucentiles des intensités des pixels.
+Ceci aura pour effet de saturer les valeurs très faibles et très élevées, améliorant ainsi le contraste.</p>
+<p>Voici un exemple sur une image, en utilisant <code>numpy</code> importée en tant que <code>np</code> :</p>
+<pre><code>low,high = np.percentile(input_img,(2,98))
+input_img = (input_img-low)/(high-low)
+input_img = np.clip(input_img,0,1)
+</code></pre>
+<p>Il est également possible de jouer sur les paramètres <code>vmin</code> et <code>vmax</code> de la méthode <code>imshow</code>, afin de changer les bornes de l'échelle de couleur.
+Mettre des bornes plus grandes que le maximum et le minimum d'intensité des pixels de l'image permet de modifier le contraste de l'affichage.</p>
+<p><strong>Ajoutez à votre script Python l'importation des 4 GeoTIFF</strong>.</p>
+<p>Si vous affichez les 4 images qu'ils contiennent, vous devriez obtenir un résultat similaire à celui-ci :</p>
+<p><img alt="Image Sentinel 2 en 4 bandes" src="../img/Sentinel_color_bands.png" /></p>
+<p>On voit déjà que certaines ressortent plus ou moins dans les différentes bandes : les rivières, les lacs, la ville, les différents types de végétation, etc.</p>
+<p>Pour visualiser une image satellite acquise dans différentes bandes de fréquences, on utilise en général une <strong>représentation RGB</strong>.
+On sélectionne 3 bandes, on assigne à chaque bande une couleur, et on superpose les 3 images pour obtenir une seule image en "couleurs".</p>
+<p>Pour fusionner 3 matrices <code>img_red</code>, <code>img_green</code> et <code>img_blue</code> correspondant à 3 bandes d'une image que l'on veut afficher en RGB, il suffit de les concaténer avec <code>numpy</code> :</p>
+<pre><code>img_rgb = np.stack((img_red,img_green,img_blue),axis=-1)
+</code></pre>
+<p>Par défaut, l'échelle de couleur de la méthode <code>imshow</code> sera la bonne.</p>
+<p>Le plus classique est d'afficher en rouge la bande du rouge, en vert la bande du vert, et en bleu la bande du bleu.
+C'est ce que l'on appelle une image en <strong>vraies couleurs</strong>, car il se rapproche des couleurs telles que les percevrait notre oeil.</p>
+<p>Voici ce que cela donne avec notre image Sentinel 2 :</p>
+<p><img alt="Image RGB en vraies couleurs" src="../img/Sentinel_true_colors.png" /></p>
+<p>On peut également réaliser un affichage <strong>fausses couleurs</strong>.
+Le plus commun est de mettre en rouge le proche-infrarouge, en vert le rouge, et en bleu le vert.</p>
+<p>En effet, ce type d'affichage permet de bien faire ressortir la végétation des étendues d'eau ou des villes.</p>
+<p>Voici ce que cet affichage donne sur notre image Sentinel 2 :</p>
+<p><img alt="Image RGB en fausses couleurs" src="../img/Sentinel_false_colors.png" /></p>
+<p>La végétation ressort nettement en teintes de rouge, alors que les rivières et la ville ressortent en bleu.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Nota Bene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Il est possible que les images en "vraie couleurs" vous paraissent avoir des couleurs un peu surnaturelles.</td>
+</tr>
+<tr>
+<td style="text-align: left;">C'est normal, les caméras de Sentinel 2 n'aquièrent pas exactement les mêmes longueurs d'onde que les cellules de notre rétine.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Si vous étiez dans l'espace, vous ne vériez donc pas tout à fait les mêmes couleurs avec votre oeil.</td>
+</tr>
+</tbody>
+</table>
+<p>Ces quelques affichages semblent confirmer la pertinence d'utiliser la "couleurs" des pixels de l'image dans ces 4 bandes pour classifier les types de surface au sol.</p>
+<h2 id="classification-supervisee">Classification supervisée</h2>
+<h3 id="lapprentissage-supervise">L'apprentissage supervisé</h3>
+<p><em>Comment "apprendre" à un classifieur à reconnaitre un pixel de forêt, de champs, de ville ou de rivière à partir de sa couleur ?</em></p>
+<p>Dans ce tutoriel, nous allons utiliser une méthode appelée "<strong>l'apprentissage supervisé</strong>".</p>
+<p>En "apprentissage automatique" (ou "Machine-Learning" en anglais), on essaye d'enseigner à un modèle comment renvoyer les sorties attendues à partir d'une sélection d'entrées.</p>
+<p>Suivant la nature de la sortie, on parlera de :</p>
+<ul>
+<li>
+<p><strong>Régression</strong> si la sortie est quantitative et continue.</p>
+</li>
+<li>
+<p><strong>Classification</strong> si la sortie est quantitative discrète ou qualitative.</p>
+</li>
+</ul>
+<p>Comme ici notre sortie est un "label" (ou "étiquette") que nous voulons attribuer à un pixel à partir des valeurs qu'il contient dans les différentes bandes, nous sommes clairement face à un problème de "<strong>classification</strong>".</p>
+<p>L'expression "<strong>supervisée</strong>" vient du fait que pour enseigner à notre modèle comment prédire les labels corrects pour les pixels de l'image, nous allons lui fournir des exemples de pixels <strong>déjà labélisés</strong> pour qu'il puisse s'<strong>entrainer</strong>.</p>
+<p>Au cours de l'entrainement, le modèle peut donc comparer ses prédictions aux labels attendus pour cet exemple, d'où le côté "supervisé".</p>
+<p>La classification supervisée implique que nous ayons une <strong>connaissance du terrain</strong> dont sont issus nos pixels d'exemple.</p>
+<p>Par opposition, ce que l'on appelle "classification non-supervisée" serait ici le fait de séparer les pixels en différents groupes suivant les valeurs qu'ils contiennent dans les différentes bandes, sans a priori sur l'identification des pixels.
+On parle aussi de "clustering" ou "<strong>partitionnement</strong>".
+Nous en reparlerons lors du TP suivant.</p>
+<p><img alt="Apprentissage automatique" src="../img/Sentinel_Machine_Learning.png" /></p>
+<h3 id="base-de-donnees-labelisee">Base de données labélisée</h3>
+<p>Pour pouvoir entrainer un modèle à identifier un pixel, il nous faut <strong>une base de données de pixels labélisés</strong>.</p>
+<p>Nous allons donc sélectionner des rectangles de pixels dans notre Sentinel 2, pour lesquels nous sommes certains de l'identification.</p>
+<p>Voici une fonction toute faite pour la sélection de pixels dans 4 GeoTIFF <code>blue</code>, <code>green</code>, <code>red</code> et <code>nir</code>, entre les latitudes <code>lat_min</code> et <code>lat_max</code>, et les longitudes <code>lon_min</code> et <code>lon_max</code>.
+L'utilisateur peut choisir d'attribuer aux pixels le label qu'il souhaite avec le paramètre <code>label</code>.
+L'intensité des pixels sélectionnés dans les différentes bandes et le label assigné seront ajoutés à un dictionnaire, renvoyé en sortie de la fonction :</p>
+<pre><code>def add_sample(blue,green,red,nir,lon_min,lon_max,lat_min,lat_max,label,dict_dataset={'blue':[],'green':[],'red':[],'nir':[],'label':[]}):
+
+    window = rasterio.windows.from_bounds(left=lon_min,bottom=lat_min,right=lon_max,top=lat_max,transform=geotiff_blue.transform)
+
+    sample_blue = geotiff_blue.read(1,window=window)
+    sample_green = geotiff_green.read(1,window=window)
+    sample_red = geotiff_red.read(1,window=window)
+    sample_nir = geotiff_nir.read(1,window=window)
+
+    dict_dataset['blue'] += list(sample_blue.ravel())
+    dict_dataset['green'] += list(sample_green.ravel())
+    dict_dataset['red'] += list(sample_red.ravel())
+    dict_dataset['nir'] += list(sample_nir.ravel())
+
+    dict_dataset['label'] += [label]*sample_blue.size
+
+    return dict_dataset
+</code></pre>
+<p>Voici par exemple une commande pour ajouter un rectangle de pixels correspondant à de la forêt, à un dictionnaire nouvellement créé :</p>
+<pre><code>dict_dataset = add_sample(geotiff_blue,geotiff_green,geotiff_red,geotiff_nir,-68.985,-68.965,-12.595,-12.585,'forest')
+</code></pre>
+<p>Pour ajouter des pixels correspondant à de la ville à ce même dictionnaire, on peut utiliser une commande similaire à celle-ci :</p>
+<pre><code>dict_dataset = add_sample(geotiff_blue,geotiff_green,geotiff_red,geotiff_nir,-69.196,-69.182,-12.602,-12.590,'city',dict_dataset)
+</code></pre>
+<p><strong>Ajoutez cette fonction à votre script, et créez un dictionnaire contenant des sélection de pixels pour la forêt, les champs, la ville et l'eau.</strong></p>
+<p>Pour faire ceci, vous pouvez vous servir de votre affichage RGB géolocalisé de l'image Sentinel 2, ou d'un service de cartographie en ligne pour vérifier la nature des sols.</p>
+<p>Voici l'exemple de sélection qui a été utilisé pour obtenir les résultats montrés dans ce tutoriel :</p>
+<p><img alt="Base de données d'apprentissage" src="../img/Sentinel_training_dataset.png" /></p>
+<p>Un fois le dictionnaire obtenu, il pourra être transformé en DataFrame <code>pandas</code> :</p>
+<pre><code>df_dataset = pd.DataFrame(dict_dataset)
+</code></pre>
+<p>Les DataFrames sont en effet couramment utilisés sous Python pour fournir des données à des méthodes de Machine-Learning.
+Les colonnes correspondent en général aux variables d'entrée (ici les intensités des pixels dans les 4 bandes de l'image), et aux labels (ici l'identification du sol).
+Les lignes correspondent aux différents individus de la base de données (ici les pixels).</p>
+<p>Il ne faudra pas oublier d'importer <code>pandas</code> en début de script :</p>
+<pre><code>import pandas as pd
+</code></pre>
+<p>C'est bon, nous avons notre <strong>base données d'entrainement</strong> !</p>
+<p>Un bon réflexe est d'afficher les <strong>histogrammes</strong> des différentes classes pour chacune des variables.
+Ainsi, on peut vérifier si les différentes classes sont bien séparables grâce aux bandes choisies, et si le choix d'un modèle Gaussien a un sens.</p>
+<p>Pour afficher des histogrammes à partir d'un DataFrame, on peut utiliser la bibliothèque <code>seaborn</code>, qui propose de nombreux affichages utiles en analyse de données.</p>
+<p>N'oubliez donc pas de l'importer en début de script :</p>
+<pre><code>import seaborn as sns
+</code></pre>
+<p>Vous pouvez ainsi utiliser la méthode <code>histplot</code> pour afficher un histogramme pour la bande bleue, avec une couleur différente par label :</p>
+<pre><code>sns.histplot(data=df_dataset,x='blue',hue='label')
+</code></pre>
+<p>Pour notre exemple de sélection de pixels, nous obtenons les histogrammes suivants :</p>
+<p><img alt="Histogrammes de la base de données d'entrainement" src="../img/Sentinel_training_dataset_statistics.png" /></p>
+<p><strong>Ajoutez un affichage similaire à votre script Python.</strong></p>
+<p><em>En regardant les histogrammes obtenus, pensez-vous que les 4 bandes retenues permettent de séparer nos 4 classes ?</em></p>
+<p><em>Et pensez-vous que l'hypothèse Gaussienne est pertinente pour toutes les classes ?</em></p>
+<h3 id="classifieur-naive-bayes">Classifieur Naive Bayes</h3>
+<p>Il nous faut à présent choisir un type de modèle à entrainer.</p>
+<p>Une des méthodes de base pour la classification supervisée est la "<strong>décision Bayésienne</strong>" (ou "Naive Bayes" en anglais).</p>
+<p>Le principe est le suivant : essayer d'estimer la probabilité conditionnelle d'un pixel d'avoir un label sachant les valeurs qu'il contient.
+Le label ayant <strong>la plus grande probabilité conditionnelle</strong> est attribué à ce pixel.</p>
+<p>Comme son nom l'indique, cette méthode va déterminer la probabilité conditionnelle de chaque classe en se basant sur la <strong>formule de Bayes</strong>.</p>
+<p>Un <strong>modèle Gaussien</strong> est d'abord ajusté à la distribution des pixels au sein de chaque label dans les données d'entrainement grâce à l'algorithme du "maximum de vraisemblance" (ou "maximum likelihood" en anglais).
+Ce modèle est ensuite utilisé dans la formule de Bayes pour calculer les probabilités conditionnelles de n'importe quel pixel pour chaque classe.</p>
+<p>Par exemple, si nous voulons classer des individus en 3 classes <span class="arithmatex">\(C_1\)</span>, <span class="arithmatex">\(C_2\)</span> et <span class="arithmatex">\(C_3\)</span> à partir d'une variable <span class="arithmatex">\(x\)</span> :</p>
+<p><img alt="La décision Bayésienne" src="../img/Sentinel_Naive_Bayes.png" /></p>
+<p>On peut tracer une <strong>frontière de décision</strong> entre les labels en traçant la ligne des valeurs de pixels pour lesquelles les probabilités conditionnelles entre 2 labels sont égales.</p>
+<p>Voici une illustration de la méthode pour un exemple simple avec une image satellite acquise dans 2 bandes, et 2 labels possibles pour les pixels :</p>
+<p><img alt="La décision Bayésienne appliquée à une image" src="../img/Sentinel_Naive_Bayes_raster.gif" /></p>
+<p>Il existe une implémentation de cette méthode dans la bibliothèque Python <code>scikit-learn</code>, que nous allons utiliser lors de ce tutoriel.</p>
+<p>Si cette méthode est beaucoup plus basique que les réseaux de neurones actuels, elle est aussi beaucoup plus rapide à entrainer, et peut donner des résultats très satisfaisants selon les applications.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Nota Bene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Il est possible d'utiliser d'autres fonctions qu'une Gaussienne pour modéliser les différentes classes.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Mais par défaut, on sous-entend souvent que la "décision Bayésienne" est à modèle Gaussien.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pipeline-scikit-learn">Pipeline Scikit-Learn</h3>
+<p>Les outils de <strong>Machine-Learning</strong> que nous utiliserons lors de ce tutoriel sont tous contenus dans la bibliothèque <code>scikit-learn</code>.</p>
+<p>Pour commencer, cette bibliothèque permet de définir un type d'objet que l'on appelle un "<strong>Pipeline</strong>".
+Il permet de créer une petite chaîne pouvant contenir des pré-traitements des données d'entrée, un classifieur, et des post-traitement des labels de sortie.</p>
+<p>Pour notre application, nous allons définir un Pipeline contenant une <strong>mise à l'échelle</strong> puis un classifieur "<strong>Naive Bayes</strong>".</p>
+<p>En effet, il est recommandé de mettre à l'échelle les différentes variables d'entrée d'un classifieur, pour éviter de biaiser son entrainement : il risquerait de donner plus de poids à une variable simplement parce qu'elle a des valeurs numériques plus grandes.</p>
+<p>Pour éviter ce problème, nous choisissons la fonction "<strong>centrage-réduction</strong>" ("standard scaler" en anglais), qui consiste juste en un retrait de la moyenne et une division par l'écart-type de chaque variable.
+La moyenne des variables devient alors 0, et leur écart-type 1.</p>
+<p>En début de script Python, il faudra importer l'objet "Pipeline" de <code>scikit-learn</code>, le centrage-réduction, et la méthode de la décision bayesienne :</p>
+<pre><code>from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.naive_bayes import GaussianNB
+</code></pre>
+<p>Pour définir une Pipeline <code>classifier_pipeline</code> avec une mise à l'échelle nommée <code>scaler</code>, et un classifieur nommé <code>gnb</code>, on pourra utiliser la commande :</p>
+<pre><code>classifier_pipeline = Pipeline([('scaler',StandardScaler()),('gnb',GaussianNB())])
+</code></pre>
+<p><strong>Ajoutez la définition de ce Pipeline à votre script Python.</strong></p>
+<p>Il nous faut maintenant entrainer ce Pipeline sur notre base de données.</p>
+<h2 id="entrainement">Entrainement</h2>
+<h3 id="ajustement-du-modele">Ajustement du modèle</h3>
+<p>Il est très simple d'entrainer un Pipeline <code>scikit-learn</code> : il suffit d'utiliser la méthode <code>fit</code>, avec en paramètres les variables d'entrée et les labels de la base de données d'entrainement.
+En Machine-Learning, les variables d'entrée d'un classifieur sont appelées "<strong>features</strong>", et les sorties sont appelées "<strong>labels</strong>".</p>
+<p>Dans un premier temps, il faut sélectionner les "features" et les "labels" de notre base de données d'entrainement :</p>
+<pre><code>features = df_dataset.drop(columns=['label'])
+labels = df_dataset['label']
+</code></pre>
+<p>Ensuite, on appelle <code>fit</code> avec en paramètres les "features" et les "labels" :</p>
+<pre><code>classifier_pipeline.fit(features,labels)
+</code></pre>
+<p><strong>Ajoutez à votre script Python l'entrainement de votre Pipeline.</strong>*</p>
+<p>Et voilà, nous avons un Pipeline entrainé à classifier les pixels de notre image !
+Reste à vérifier avec quelle performance.</p>
+<h3 id="performances-en-entrainement">Performances en entrainement</h3>
+<p>Pour évaluer les performances d'un classifieur, il faut vérifier s'il est bien capable de <strong>prédire des labels connus</strong>.</p>
+<p>La méthode <code>predict</code> d'un Pipeline permet de réaliser une prédiction à partir de "features" donnés :</p>
+<pre><code>prediction = classifier_pipeline.predict(features)
+</code></pre>
+<p>On peut donc appliquer la méthode <code>predict</code> aux features de notre base de données d'entrainement, afin de vérifier que l'on obtient bien les labels attendus.</p>
+<p>Pour une prédiction d'un label donné, il existe <strong>4 situations</strong> :</p>
+<ul>
+<li>
+<p><strong>TP</strong> : les vrais positifs, ce label a été prédit et c'était le bon label.</p>
+</li>
+<li>
+<p><strong>TN</strong> : le vrais négatifs, ce label n'a pas été prédit et ce n'était pas le bon label.</p>
+</li>
+<li>
+<p><strong>FP</strong> : les faux positifs, ce label a été prédit mais ce n'était pas le bon label.</p>
+</li>
+<li>
+<p><strong>FN</strong> : les faux négatifs, ce label n'a pas été prédit mais c'était le bon label.</p>
+</li>
+</ul>
+<p>Pour toutes les prédictions effectuée sur une base de données labélisée, on met en général les résultats sous la forme d'une "<strong>matrice de confusion</strong>".</p>
+<p>Les colonnes correspondent aux labels prédits, les lignes aux labels corrects, et chaque case contient le nombre d'occurences.</p>
+<p><img alt="Matrice de confusion" src="../img/Sentinel_confusion_matrix.png" /></p>
+<p>De manière générale, la diagonale correspond aux <strong>prédictions correctes</strong>, et le reste de la matrice aux <strong>prédictions incorrectes</strong>.</p>
+<p>On peut aussi déterminer le nombre de TP, TN, FP et FN du point de vue d'un label donné.</p>
+<p>Il existe une implémentation de la matrice de confusion dans <code>scikit-learn</code>, que l'on peut importer avec :</p>
+<pre><code>from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
+</code></pre>
+<p>L'objet <code>confusion_matrix</code> permet de créer une matrice de confusion à partir de labels connus et de labels prédits, la méthode <code>ConfusionMatrixDisplay</code> permet ensuite d'afficher cette matrice sous la forme d'une figure.</p>
+<p>Voici comment utiliser cette méthode avec notre Pipeline, sur notre base de données d'entrainement :</p>
+<pre><code>set_labels = sorted(set(labels))
+cm = confusion_matrix(labels,classifier_pipeline.predict(features),labels=set_labels)
+ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=set_labels).plot()
+</code></pre>
+<p>Voici un exemple de matrice de confusion obtenue avec la sélection de pixels d'entrainement montrée précédemment :</p>
+<p><img alt="Exemple de matrice de confusion" src="../img/Sentinel_confusion_matrix_training_dataset.png" /></p>
+<p>On voit ici nettement que la forêt et l'eau sont très bien identifiés par notre classifieur.
+En revanche, il a visiblement du mal à distinguer les champs de la ville.</p>
+<p>Pour notre application, où nous désirons différencier la forêt des zones déboisées, ce n'est pas un problème majeur.</p>
+<p>La matrice de confusion permet de déterminer quelles classes sont plus difficiles à prédire que d'autres, et avec quelles classes elles sont confondues par le modèle.
+Mais elle est moins pratique pour comparer rapidement 2 modèles, ou un même modèle sur 2 bases de données labélisées.</p>
+<p>On lui préfèrera donc <strong>un score entre 0 et 1</strong>, déterminé à partir de la matrice de confusion.</p>
+<p>Le score le plus commun est l'<strong>exactitude</strong> (ou "accuracy" en anglais) : </p>
+<p><span class="arithmatex">\(\frac{TP+TN}{TP+FP+TN+FN}\)</span></p>
+<p>Il correspond au ratio entre le nombre de prédictions correctes, et le nombre total de prédiction.</p>
+<p>Pour déterminer ce score avec notre classifieur sur les données d'entrainement, il suffit d'utiliser la méthode <code>score</code> :</p>
+<pre><code>accuracy = classifier_pipeline.score(features,labels)
+</code></pre>
+<p><strong>Ajoutez à votre script Python l'affichage de la matrice de confusion du classifieur sur les données d'entrainement, puis le calcul de son exactitude.</strong></p>
+<p>Si on calcule l'exactitude du classifieur sur les pixels d'entrainement sélectionnés dans notre exemple, on trouve environ 0.9, soit 90% de pixels identifiés correctement.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Nota Bene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Ce critère fonctionne bien si la base de donnée est équilibrée (c'est-à-dire avec un nombre d'individus similaires pour chaque label).</td>
+</tr>
+<tr>
+<td style="text-align: left;">Si ce n'est pas le cas, on lui préfèrera le F1-score, aussi très commun pour évaluer un classifieur.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="test">Test</h2>
+<h3 id="la-problematique-du-sur-apprentissage">La problématique du sur-apprentissage</h3>
+<p>En Machine-Learning, le nerf de la guerre est la <strong>généralisation</strong>.</p>
+<p>En effet, un modèle qui a d'excellente performances sur les données d'entrainement, mais de mauvaises performances sur n'importe quelles autres données <strong>ne sert à rien</strong>.
+On veut que le modèle soit capable de <strong>généraliser</strong> ce qu'il a apprit.</p>
+<p>Ceci peut arriver lorsqu'un modèle apprend <strong>trop spécifiquement</strong> des données d'entrainement.
+C'est ce que l'on appelle le <strong>sur-apprentissage</strong>, et c'est la hantise de tous les "data-scientists".</p>
+<p>Voici une illustration sur un problème de régression :</p>
+<p><img alt="Le surapprentissage" src="../img/Sentinel_overfitting.png" /></p>
+<p>Le modèle de gauche est visiblement trop simpliste pour capturer la tendance principale des données : on parle de <strong>sous-apprentissage</strong>.</p>
+<p>Le modèle de droite est visiblement trop complexe, et capture même le bruit dans les données d'entrainement.
+Il aura donc d'excellentes performances sur les données d'entrainement, mais aura du mal à généraliser : il y a <strong>sur-apprentissage</strong>.</p>
+<p>Le modèle <strong>idéal</strong> est au milieu : assez complexe pour capturer la tendance principale des données d'entrainement, sans aller jusqu'à apprendre le bruit dans les données.</p>
+<p>Le <strong>sur-apprentissage</strong> peut avoir différentes origines :</p>
+<ul>
+<li>
+<p>Trop peu de données d'entrainement.</p>
+</li>
+<li>
+<p>Des données d'entrainement pas assez représentatives.</p>
+</li>
+<li>
+<p>Des données de mauvaise qualité (mauvais labels, déséquilibre entre labels, etc.).</p>
+</li>
+<li>
+<p>Un type de modèle trop complexe.</p>
+</li>
+<li>
+<p>Trop peu de d'entrées au modèle.</p>
+</li>
+</ul>
+<p>Dans le contexte de notre tutoriel, en cas de de sur-apprentissage, nous pourrions essayer :</p>
+<ul>
+<li>
+<p>D'ajouter des pixels à vos données d'entrainement.</p>
+</li>
+<li>
+<p>De re-faire votre base de données d'entrainement avec des zones plus représentatives.</p>
+</li>
+<li>
+<p>Ajouter des bandes pertinentes à vos données d'entrainement.</p>
+</li>
+</ul>
+<p>Mais reste alors une question : <em>Comment détecter un sur-apprentissage ?</em></p>
+<p>Nous allons évaluer les performances du modèle sur une nouvelle sélection de données, jamais vue par le modèle pendant l'entrainement.
+Ce que l'on appelle une <strong>base de données de test</strong>.</p>
+<p>Si le classifieur performe aussi bien en test qu'en entrainement, on en déduira que l'<strong>on peut s'attendre à de bonnes performances en généralisation</strong>.</p>
+<h3 id="performances-en-test">Performances en test</h3>
+<p><strong>Ajoutez les étapes suivantes à votre script Python :</strong></p>
+<ul>
+<li>
+<p>Sélectionnez des nouveaux pixels que vous labéliserez, afin de constituer une base de données de test.
+<strong>Ces pixels devront être différents de ceux utilisés pour l'entrainement du classifieur !</strong></p>
+</li>
+<li>
+<p>Déterminez la matrice de confusion du classifieur sur ces nouvelles données.</p>
+</li>
+<li>
+<p>Déterminez l'exactitude du classifieur sur ces nouvelles données.</p>
+</li>
+</ul>
+<p><em>Que concluez-vous des résultats obtenus ?</em></p>
+<p><em>Est-ce que l'on s'attend à de bonnes performances en généralisation ?</em></p>
+<p><em>Quelles classes seront probablement moins bien prédites que les autres ?</em></p>
+<p>Si vous repérez un problème de sur-apprentissage, vous pouvez essayer de jouer sur les données d'entrainement, afin qu'elles soient plus représentatives de nos 4 classes.</p>
+<h2 id="generalisation">Généralisation</h2>
+<h3 id="application-a-limage-entiere">Application à l'image entière</h3>
+<p>Maintenant que nous avons une bonne idée des performances de notre classifieur en <strong>généralisation</strong>, nous pouvons essayer de l'appliquer à notre image entière.</p>
+<p>Tout d'abord, il faut convertir l'image en un DataFrame au même format que celui utilisé pour entrainer le classifieur :</p>
+<pre><code>df_image = pd.DataFrame({'blue':geotiff_blue.read(1).ravel(),'green':geotiff_green.read(1).ravel(),'red':geotiff_red.read(1).ravel(),'nir':geotiff_nir.read(1).ravel()})
+</code></pre>
+<p>Ensuite, on applique notre Pipeline à ce DataFrame, afin d'obtenir les prédictions du classifieur :</p>
+<pre><code>prediction_image = classifier_pipeline.predict(df_image)
+</code></pre>
+<p>Pour remettre la sortie du Pipeline au format de l'image d'origine, on peut utiliser la méthode <code>reshape</code> :</p>
+<pre><code>height,width = geotiff_blue.read(1).shape
+prediction_image = prediction_image.reshape(height,width)
+</code></pre>
+<p>Si vous regardez le contenu de la matrice <code>prediction_image</code> obtenue, vous verrez qu'elle contient des chaînes de caractères : les noms des labels.
+Hors, pour afficher cette matrice sous la forme d'une image géoréférencée, il nous faudrait plutôt des nombres entiers.</p>
+<p>On peut facilement réaliser cette conversion avec la méthode <code>vectorize</code> de <code>numpy</code> :</p>
+<pre><code>label_to_int = {&quot;forest&quot;:0,&quot;field&quot;:1,&quot;city&quot;:2,&quot;water&quot;:3}
+prediction_image = np.vectorize(label_to_int.get)(prediction_image)
+</code></pre>
+<p>La matrice obtenue pourra être affichée avec la méthode <code>imshow</code> de <code>matplotlib</code>.</p>
+<p><strong>Ajoutez l'application du classifieur à l'image entière, puis affichez la prédiction obtenue sous la forme d'une image géoréférencée.</strong></p>
+<p>Avec le classifieur de notre exemple, nous obtenons les prédictions suivantes :</p>
+<p><img alt="Classification de l'image entière" src="../img/Sentinel_image_classification.png" /></p>
+<p><em>Le résultat obtenu vous parait-il cohérent avec l'image satellite ?</em></p>
+<p><em>De quelles classes ont l'air de provenir les erreurs ? Etait-ce attendu d'après notre test ?</em></p>
+<p><em>Peut-on avoir confiance en notre classifieur pour identifier la forêt du reste ?</em></p>
+<h3 id="evaluation-de-la-surface-de-foret">Evaluation de la surface de forêt</h3>
+<p>L'étape ultime de notre étude est d'évaluer la surface de forêt capturée par notre image Sentinel 2.</p>
+<p>Pour faire ceci, nous avons besoin de 2 informations : les dimensions d'un pixel (et donc sa surface), et le nombre de pixels classés comme "forêt".</p>
+<p>Il est possible de récupérer les dimensions d'un pixel d'un GeoTIFF importé avec <code>rasterio</code> grâce à l'attribut <code>res</code> :</p>
+<pre><code>blue_res = geotiff_blue.res
+</code></pre>
+<p>Attention, les dimensions contenues dans <code>blue_res</code> seront alors en degrés de latitude / longitude et non en mètres !
+<strong>Pensez donc à convertir ces angles en distances !</strong></p>
+<p>(On pourra faire l'hypothèse qu'à la latitude de Puerto Maldonado, un degré de longitude équivaut à 108.6 km, et un degré de latitude équivaut à 111.3 km).</p>
+<p>Pour récupérer le nombre pixels de forêt, il suffit de compter le nombre de labels "forest" dans <code>prediction_image</code>.</p>
+<p><strong>Ajoutez à votre script Python la surface identifiée comme de la forêt dans notre image.</strong></p>
+<p><em>Quelle surface de forêt trouvez-vous ?</em></p>
+<p>Afin de réaliser un véritable suivi de la déforestation dans la région de Puerto Maldonado, il faudrait répéter cette analyse tous les ans, à la même saison, sur la même zone.</p>
+<hr />
+<p>Cet exemple était un prétexte pour vous faire découvrir les notions essentielles de classification supervisée, et les appliquer à un exemple issu de la télédétection satellitaire.</p>
+<p>Lors du TP suivant, nous allons nous pencher sur une autre branche du Machine-Learning : le partitionnement.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Accueil"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../TP_exoplanets/" class="btn btn-neutral float-right" title="TP Exoplanètes">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../TP_exoplanets/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
