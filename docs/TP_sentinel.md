@@ -34,6 +34,8 @@ Puerto Maldonado est donc un exemple parfait pour étudier **la déforestation e
 
 Ces satellites ont pour mission de capturer des images optiques de la surface de la Terre, **dans différentes bandes de longueur d'onde**, avec une résolution allant jusqu'à 10 m au sol.
 
+Les images de Sentinel 2 peuvent être récupérées via le site de Copernicus : [copernicus browser](https://browser.dataspace.copernicus.eu).
+
 Voici les différentes bandes dans lesquelles les satellites Sentinel 2 sont capables d'acquérir des images :
 
 |Bande|Cible                   |Longueur d'onde|Résolution au sol|
@@ -108,7 +110,7 @@ Comme son nom l'indique, ce format permet d'enregistrer des **métadonnées** en
 Le **GeoTIFF** utilise cette capacité du format TIFF pour ajouter des données de **géoréférencement** à des images.
 Ceci en fait le format idéal pour enregistrer des **images satellites** associées à des coordonnées de latitude et de longitude.
 
-Voici 4 fichiers GeoTIFF correspondant à la même image Sentinel 2 de la région de Puerto Maldonado, prise dans 4 bandes différentes :
+Voici 4 fichiers GeoTIFF correspondant à la même image Sentinel 2 de la région de Puerto Maldonado, prise dans 4 bandes différentes le 30/08/2025 :
 
 * B02 (bleu) : [cliquez ici](https://github.com/NicOudart/UVSQ_M2_NewSpace_TP_classification/blob/master/example/2025-08-30-00_00_2025-08-30-23_59_Sentinel-2_L2A_B02_(Raw).tiff).
 
@@ -656,7 +658,26 @@ _Peut-on avoir confiance en notre classifieur pour identifier la forêt du reste
 
 L'étape ultime de notre étude est d'évaluer la surface de forêt capturée par notre image Sentinel 2.
 
+Pour faire ceci, nous avons besoin de 2 informations : les dimensions d'un pixel (et donc sa surface), et le nombre de pixels classés comme "forêt".
 
+Il est possible de récupérer les dimensions d'un pixel d'un GeoTIFF importé avec `rasterio` grâce à l'attribut `res` :
+
+~~~
+blue_res = geotiff_blue.res
+~~~
+
+Attention, les dimensions contenues dans `blue_res` seront alors en degrés de latitude / longitude et non en mètres !
+**Pensez donc à convertir ces angles en distances !**
+
+(On pourra faire l'hypothèse qu'à la latitude de Puerto Maldonado, un degré de longitude équivaut à 108.6 km, et un degré de latitude équivaut à 111.3 km).
+
+Pour récupérer le nombre pixels de forêt, il suffit de compter le nombre de labels "forest" dans `prediction_image`.
+
+**Ajoutez à votre script Python la surface identifiée comme de la forêt dans notre image.**
+
+_Quelle surface de forêt trouvez-vous ?_
+
+Afin de réaliser un véritable suivi de la déforestation dans la région de Puerto Maldonado, il faudrait répéter cette analyse tous les ans, à la même saison, sur la même zone.
 
 ---
 
